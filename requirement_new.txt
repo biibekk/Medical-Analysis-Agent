@@ -1,0 +1,26 @@
+# Web Application (NEW)
+streamlit>=1.28.0
+streamlit-option-menu>=0.3.6
+
+# Database (NEW)
+# sqlite3 is built-in with Python - no installation needed
+
+# Visualization (NEW)
+plotly>=5.17.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# PDF Generation (NEW)
+reportlab>=4.0.0
+
+# OCR Support (Optional - for scanned documents)
+pytesseract>=0.3.10
+Pillow>=10.0.0
+opencv-python>=4.8.0
+pdf2image>=1.16.3
+
+# Additional utilities
+colorama>=0.4.6
+tqdm>=4.66.0
+
+werkzeug
