@@ -111,12 +111,12 @@ st.markdown("""
     
     /* Card Components */
     .modern-card {
-        background: white;
+        background: whitesmoke;
         border-radius: 16px;
-        padding: 2rem;
+        padding: 0.8rem;
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin: 1rem 0;
+        margin: 0 0 1rem 0;
         border: 1px solid rgba(0,0,0,0.05);
     }
     
@@ -589,6 +589,32 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# style for summary and recommendations
+st.markdown("""
+<style>
+    .summary-box-style{
+        border-left: 4px solid lightblue;
+        background: aliceblue; 
+        padding: 1.5rem; 
+        border-radius: 12px; 
+        line-height: 1.8; 
+        font-size: 1rem; 
+        color: #333;
+    }
+    
+    .recommendation-box-style{
+        background: linear-gradient(135deg, rgb(255, 243, 205) 0%, rgb(255, 229, 160) 100%);
+        padding: 0 1.5rem .5rem 1.5rem;
+        border-radius: 12px;
+        line-height: 1.8;
+        font-size: 1rem;
+        color: rgb(133, 100, 4);  
+        border-left: 4px solid rgb(246, 213, 116);     
+    }
+    
+            
+</style>
+""",unsafe_allow_html=True)
 
 # Email Configuration
 class EmailService:
@@ -1593,7 +1619,6 @@ def validate_password(password: str) -> tuple[bool, str]:
         return False, "Password must contain at least one number"
     return True, "Password is strong"
 
-
 # ============== AUTHENTICATION PAGES ==============
 
 def show_login_page():
@@ -1602,7 +1627,7 @@ def show_login_page():
     # Hero Section
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 3rem;">
-        <h1>🏥 Medical Analysis Agent</h1>
+        <h1>Medical Analysis Agent</h1>
         <p>Your Intelligent Medical Report Assistant</p>
     </div>
     """, unsafe_allow_html=True)
@@ -1620,40 +1645,40 @@ def show_login_page():
         """, unsafe_allow_html=True)
         
         with st.form("login_form", clear_on_submit=False):
-            email = st.text_input("📧 Email Address", placeholder="john.doe@example.com", key="login_email")
-            password = st.text_input("🔒 Password", type="password", placeholder="Enter your password", key="login_password")
+            email = st.text_input("Email Address", placeholder="Enter you email address", key="login_email")
+            password = st.text_input("Password", type="password", placeholder="Enter your password", key="login_password")
             
             remember_me = st.checkbox("Remember me")
             
             col_a, col_b = st.columns(2)
             with col_a:
-                submit = st.form_submit_button("🚀 Sign In", use_container_width=True, type="primary")
+                submit = st.form_submit_button("Sign In", use_container_width=True, type="primary")
             with col_b:
-                forgot = st.form_submit_button("🔑 Forgot Password", use_container_width=True)
+                forgot = st.form_submit_button("Forgot Password", use_container_width=True)
             
             if submit:
                 if not email or not password:
-                    st.error("⚠️ Please fill in all fields")
+                    st.error("Please fill in all fields")
                 elif not validate_email(email):
-                    st.error("⚠️ Please enter a valid email address")
+                    st.error("Please enter a valid email address")
                 else:
-                    with st.spinner("🔄 Authenticating..."):
+                    with st.spinner("Authenticating..."):
                         user_info = db.authenticate_user(email, password)
                         
                         if user_info:
                             if not user_info['is_verified']:
-                                st.warning("⚠️ Please verify your email first")
+                                st.warning("Please verify your email first")
                                 st.session_state.pending_email = email
                                 st.session_state.auth_stage = 'verify_email'
                                 st.rerun()
                             else:
                                 st.session_state.logged_in = True
                                 st.session_state.user_info = user_info
-                                st.success(f"✅ Welcome back, {user_info['full_name']}!")
+                                st.success(f"Welcome back, {user_info['full_name']}!")
                                 st.balloons()
                                 st.rerun()
                         else:
-                            st.error("❌ Invalid credentials. Account may be locked after 5 failed attempts.")
+                            st.error("Invalid credentials. Account may be locked after 5 failed attempts.")
             
             if forgot:
                 st.session_state.auth_stage = 'forgot_password'
@@ -1667,7 +1692,7 @@ def show_login_page():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("✨ Create New Account", use_container_width=True, key="goto_signup"):
+        if st.button("Create New Account", use_container_width=True, key="goto_signup"):
             st.session_state.auth_stage = 'signup'
             st.rerun()
         
@@ -1708,7 +1733,7 @@ def show_signup_page():
     
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 3rem;">
-        <h1>🏥 Medical Analysis Agent</h1>
+        <h1>Medical Analysis Agent</h1>
         <p>Join thousands of users taking control of their health</p>
     </div>
     """, unsafe_allow_html=True)
@@ -1726,45 +1751,45 @@ def show_signup_page():
         """, unsafe_allow_html=True)
         
         with st.form("signup_form"):
-            full_name = st.text_input("👤 Full Name *", placeholder="John Doe")
-            email = st.text_input("📧 Email Address *", placeholder="john.doe@example.com")
+            full_name = st.text_input("Full Name *", placeholder="Enter your name")
+            email = st.text_input("Email Address *", placeholder="Enter your email address")
             
             col_a, col_b = st.columns(2)
             with col_a:
-                password = st.text_input("🔒 Password *", type="password", placeholder="Create password")
+                password = st.text_input("Password *", type="password", placeholder="Create password")
             with col_b:
-                confirm_password = st.text_input("🔒 Confirm Password *", type="password", placeholder="Re-enter password")
+                confirm_password = st.text_input("Confirm Password *", type="password", placeholder="Re-enter password")
             
-            with st.expander("📝 Optional Information (helps personalize your experience)"):
+            with st.expander("Optional Information (helps personalize your experience)"):
                 col_c, col_d = st.columns(2)
                 with col_c:
-                    dob = st.date_input("📅 Date of Birth", value=None, max_value=datetime.now())
+                    dob = st.date_input("Date of Birth", value=None, max_value=datetime.now())
                 with col_d:
-                    gender = st.selectbox("⚧ Gender", ["", "Male", "Female", "Other", "Prefer not to say"])
+                    gender = st.selectbox("Gender", ["", "Male", "Female", "Other", "Prefer not to say"])
                 
-                phone = st.text_input("📱 Phone Number", placeholder="+1234567890")
+                phone = st.text_input("Phone Number", placeholder="+1234567890")
             
             st.markdown("<br>", unsafe_allow_html=True)
             
             agree = st.checkbox("I agree to the **Terms of Service** and **Privacy Policy** *")
             
-            submit = st.form_submit_button("🚀 Create Account", use_container_width=True, type="primary")
+            submit = st.form_submit_button("Create Account", use_container_width=True, type="primary")
             
             if submit:
                 if not all([full_name, email, password, confirm_password]):
-                    st.error("⚠️ Please fill in all required fields (*)")
+                    st.error("Please fill in all required fields (*)")
                 elif not validate_email(email):
-                    st.error("⚠️ Please enter a valid email address")
+                    st.error("Please enter a valid email address")
                 elif password != confirm_password:
-                    st.error("⚠️ Passwords do not match")
+                    st.error("Passwords do not match")
                 else:
                     is_valid, msg = validate_password(password)
                     if not is_valid:
-                        st.error(f"⚠️ {msg}")
+                        st.error(f"{msg}")
                     elif not agree:
-                        st.error("⚠️ Please agree to the Terms of Service and Privacy Policy")
+                        st.error("Please agree to the Terms of Service and Privacy Policy")
                     else:
-                        with st.spinner("🔄 Creating your account..."):
+                        with st.spinner("Creating your account..."):
                             success, result = db.create_user(
                                 email, password, full_name,
                                 str(dob) if dob else None,
@@ -1779,27 +1804,13 @@ def show_signup_page():
                                 # Try to send OTP (will print to console if email not configured)
                                 email_sent = email_service.send_otp(email, otp, "verification")
                                 
-                                # Always show success and proceed to verification
-                                st.success("✅ Account created successfully!")
-                                
-                                # Show info message based on email configuration
-                                if os.getenv('SMTP_USERNAME'):
-                                    st.info("📧 Check your email for the verification code.")
-                                else:
-                                    st.warning("💡 **Check your terminal/console for the OTP code!**")
-                                    st.code(f"Look for: 🔢 OTP Code: XXXXXX", language="bash")
-                                
+                                # Store data and redirect to verification
                                 st.session_state.pending_email = email
                                 st.session_state.pending_user_data = {'full_name': full_name}
                                 st.session_state.auth_stage = 'verify_email'
-                                st.balloons()
-                                
-                                # Small delay to show messages
-                                import time
-                                time.sleep(1)
                                 st.rerun()
                             else:
-                                st.error(f"❌ Error: {result}")
+                                st.error(f"Error: {result}")
         
         st.markdown("---")
         
@@ -1809,18 +1820,19 @@ def show_signup_page():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🔑 Sign In Instead", use_container_width=True):
+        if st.button("Sign In Instead", use_container_width=True):
             st.session_state.auth_stage = 'login'
             st.rerun()
         
         st.markdown('</div>', unsafe_allow_html=True)
+
 
 def show_verify_email_page():
     """Professional email verification page."""
     
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 3rem;">
-        <h1>📧 Verify Your Email</h1>
+        <h1>Verify Your Email</h1>
         <p>Enter the verification code to activate your account</p>
     </div>
     """, unsafe_allow_html=True)
@@ -1830,10 +1842,10 @@ def show_verify_email_page():
     with col2:
         # Check for success flag first
         if st.session_state.get('verification_success'):
-            st.success("🎉 Email verified successfully!")
+            st.success("Email verified successfully!")
             st.markdown("""
             <div class="alert-box alert-success">
-                <strong>✅ Success!</strong><br>
+                <strong>Success!</strong><br>
                 Your account is now active. Redirecting to login...
             </div>
             """, unsafe_allow_html=True)
@@ -1854,7 +1866,7 @@ def show_verify_email_page():
         if os.getenv('SMTP_USERNAME'):
             st.markdown(f"""
             <div class="alert-box alert-info">
-                <strong>📨 Check Your Email</strong><br>
+                <strong>Check Your Email</strong><br>
                 We've sent a 6-digit verification code to:<br>
                 <strong style="font-size: 1.1rem; color: #667eea;">{st.session_state.pending_email}</strong>
             </div>
@@ -1862,33 +1874,33 @@ def show_verify_email_page():
         else:
             st.markdown(f"""
             <div class="alert-box alert-warning">
-                <strong>💡 Development Mode - Check Console</strong><br>
+                <strong>Development Mode - Check Console</strong><br>
                 Your verification code has been printed to the terminal/console where Streamlit is running.<br><br>
                 Look for:<br>
                 <code style="background: #f5f5f5; padding: 0.5rem; border-radius: 4px; display: block; margin-top: 0.5rem;">
-                🔢 OTP Code: XXXXXX
+                OTP Code: XXXXXX
                 </code>
             </div>
             """, unsafe_allow_html=True)
             
-            st.info("📧 **Email not configured.** To enable email delivery, set up SMTP credentials in your `.env` file.")
+            st.info("**Email not configured.** To enable email delivery, set up SMTP credentials in your `.env` file.")
         
         with st.form("verify_form"):
             otp = st.text_input(
-                "🔢 Enter 6-Digit Verification Code",
+                "Enter 6-Digit Verification Code",
                 max_chars=6,
                 placeholder="000000",
                 help="Enter the 6-digit code from your email or console",
                 key="verify_otp"
             )
             
-            submit = st.form_submit_button("✅ Verify Email", use_container_width=True, type="primary")
+            submit = st.form_submit_button("Verify Email", use_container_width=True, type="primary")
             
             if submit:
                 if len(otp) != 6 or not otp.isdigit():
-                    st.error("⚠️ Please enter a valid 6-digit code")
+                    st.error("Please enter a valid 6-digit code")
                 else:
-                    with st.spinner("🔄 Verifying..."):
+                    with st.spinner("Verifying..."):
                         if db.verify_otp(st.session_state.pending_email, otp, "verification"):
                             db.verify_user_account(st.session_state.pending_email)
                             
@@ -1902,40 +1914,41 @@ def show_verify_email_page():
                                 except:
                                     pass
                             
-                            st.balloons()
+                            # st.balloons()
                             
                             # Set success flag to trigger redirect
                             st.session_state.verification_success = True
                             st.rerun()
                         else:
-                            st.error("❌ Invalid or expired verification code")
-                            st.info("💡 Codes expire after 10 minutes. You can request a new one below.")
+                            st.error("Invalid or expired verification code")
+                            st.info("Codes expire after 10 minutes. You can request a new one below.")
         
         st.markdown("---")
         
         col_a, col_b = st.columns(2)
         with col_a:
-            if st.button("🔄 Resend Code", use_container_width=True):
+            if st.button("Resend Code", use_container_width=True):
                 otp = db.create_otp(st.session_state.pending_email, "verification")
                 email_service.send_otp(st.session_state.pending_email, otp, "verification")
                 
                 if os.getenv('SMTP_USERNAME'):
-                    st.success("✅ New code sent to your email!")
+                    st.success("New code sent to your email!")
                 else:
-                    st.success("✅ New code generated! Check your console/terminal.")
+                    st.success("New code generated! Check your console/terminal.")
                 st.rerun()
         
         with col_b:
-            if st.button("⬅️ Back to Login", use_container_width=True):
+            if st.button("⬅Back to Login", use_container_width=True):
                 st.session_state.auth_stage = 'login'
                 st.rerun()
+
 
 def show_forgot_password_page():
     """Professional password reset page."""
     
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 3rem;">
-        <h1>🔑 Reset Password</h1>
+        <h1>Reset Password</h1>
         <p>Don't worry, we'll help you get back in</p>
     </div>
     """, unsafe_allow_html=True)
@@ -1957,58 +1970,73 @@ def show_forgot_password_page():
             """, unsafe_allow_html=True)
             
             with st.form("forgot_password_form"):
-                email = st.text_input("📧 Email Address", placeholder="john.doe@example.com")
-                submit = st.form_submit_button("📨 Send Reset Code", use_container_width=True, type="primary")
+                email = st.text_input("Email Address", placeholder="Enter you email address")
+                submit = st.form_submit_button("Send Reset Code", use_container_width=True, type="primary")
                 
                 if submit:
                     if not email or not validate_email(email):
-                        st.error("⚠️ Please enter a valid email address")
+                        st.error("Please enter a valid email address")
                     else:
-                        with st.spinner("🔄 Sending reset code..."):
+                        with st.spinner("Sending reset code..."):
                             otp = db.create_otp(email, "password_reset")
                             if email_service.send_otp(email, otp, "password reset"):
-                                st.success("✅ Reset code sent to your email!")
+                                st.success("Reset code sent to your email!")
                                 st.session_state.pending_email = email
                                 st.session_state.reset_stage = 'verify'
                                 st.rerun()
                             else:
-                                st.error("❌ Failed to send email. Please try again.")
+                                st.error("Failed to send email. Please try again.")
+            
+            st.markdown("---")
+            
+            if st.button("Back to Login", use_container_width=True):
+                st.session_state.auth_stage = 'login'
+                st.session_state.reset_stage = 'request'
+                st.rerun()
         
         elif st.session_state.reset_stage == 'verify':
             st.markdown(f"""
             <div class="alert-box alert-info">
-                <strong>📨 Check Your Email</strong><br>
+                <strong>Check Your Email</strong><br>
                 Reset code sent to: <strong>{st.session_state.pending_email}</strong>
             </div>
             """, unsafe_allow_html=True)
             
             with st.form("verify_reset_form"):
-                otp = st.text_input("🔢 Enter Reset Code", max_chars=6, placeholder="000000")
-                submit = st.form_submit_button("✅ Verify Code", use_container_width=True, type="primary")
+                otp = st.text_input("Enter Reset Code", max_chars=6, placeholder="000000")
+                submit = st.form_submit_button("Verify Code", use_container_width=True, type="primary")
                 
                 if submit:
                     if len(otp) != 6 or not otp.isdigit():
-                        st.error("⚠️ Please enter a valid 6-digit code")
+                        st.error("Please enter a valid 6-digit code")
                     else:
                         if db.verify_otp(st.session_state.pending_email, otp, "password_reset"):
-                            st.success("✅ Code verified! Set your new password.")
+                            st.success("Code verified! Set your new password.")
                             st.session_state.reset_stage = 'reset'
                             st.rerun()
                         else:
-                            st.error("❌ Invalid or expired code")
+                            st.error("Invalid or expired code")
             
-            if st.button("🔄 Resend Code", use_container_width=True):
+            if st.button("Resend Code", use_container_width=True):
                 otp = db.create_otp(st.session_state.pending_email, "password_reset")
                 if email_service.send_otp(st.session_state.pending_email, otp, "password reset"):
-                    st.success("✅ New code sent!")
+                    st.success("New code sent!")
+            
+            st.markdown("---")
+            
+            if st.button("Back to Login", use_container_width=True, key="back_verify"):
+                st.session_state.auth_stage = 'login'
+                st.session_state.reset_stage = 'request'
+                st.session_state.pending_email = None
+                st.rerun()
         
         elif st.session_state.reset_stage == 'reset':
             # Check for success flag first
             if st.session_state.get('password_reset_complete'):
-                st.success("🎉 Password reset successfully!")
+                st.success("Password reset successfully!")
                 st.markdown("""
                 <div class="alert-box alert-success">
-                    <strong>✅ Success!</strong><br>
+                    <strong>Success!</strong><br>
                     Your password has been reset. Redirecting to login...
                 </div>
                 """, unsafe_allow_html=True)
@@ -2032,19 +2060,19 @@ def show_forgot_password_page():
             """, unsafe_allow_html=True)
             
             with st.form("reset_password_form"):
-                new_password = st.text_input("🔒 New Password", type="password", placeholder="Create new password")
-                confirm_password = st.text_input("🔒 Confirm Password", type="password", placeholder="Re-enter password")
-                submit = st.form_submit_button("🔄 Reset Password", use_container_width=True, type="primary")
+                new_password = st.text_input("New Password", type="password", placeholder="Create new password")
+                confirm_password = st.text_input("Confirm Password", type="password", placeholder="Re-enter password")
+                submit = st.form_submit_button("Reset Password", use_container_width=True, type="primary")
                 
                 if submit:
                     if not new_password or not confirm_password:
-                        st.error("⚠️ Please fill in all fields")
+                        st.error("Please fill in all fields")
                     elif new_password != confirm_password:
-                        st.error("⚠️ Passwords do not match")
+                        st.error("Passwords do not match")
                     else:
                         is_valid, msg = validate_password(new_password)
                         if not is_valid:
-                            st.error(f"⚠️ {msg}")
+                            st.error(f"{msg}")
                         else:
                             if db.reset_password(st.session_state.pending_email, new_password):
                                 st.balloons()
@@ -2052,8 +2080,15 @@ def show_forgot_password_page():
                                 st.session_state.password_reset_complete = True
                                 st.rerun()
                             else:
-                                st.error("❌ Failed to reset password")
-
+                                st.error("Failed to reset password")
+            
+            st.markdown("---")
+            
+            if st.button("Back to Login", use_container_width=True, key="back_reset"):
+                st.session_state.auth_stage = 'login'
+                st.session_state.reset_stage = 'request'
+                st.session_state.pending_email = None
+                st.rerun()
 
 # ============== MAIN APPLICATION PAGES ==============
 
@@ -2065,7 +2100,7 @@ def show_main_app():
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1.5rem 0; border-bottom: 2px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem;">
-            <h2 style="margin: 0; font-size: 1.5rem;">🏥 Medical Analysis Agent</h2>
+            <h2 style="margin: 0; font-size: 1.5rem;">Medical Analysis Agent</h2>
             <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Your Health Dashboard</p>
         </div>
         """, unsafe_allow_html=True)
@@ -2089,20 +2124,20 @@ def show_main_app():
         """, unsafe_allow_html=True)
 
         # Professional Navigation Menu
-        st.markdown("### 📍 Navigation")
+        st.markdown("### Navigation")
         
         # Initialize page in session state if not exists
         if 'current_page' not in st.session_state:
-            st.session_state.current_page = '📊 Dashboard'
+            st.session_state.current_page = 'Dashboard'
         
         # Navigation items
         nav_items = [
-            ("📊 Dashboard", "dashboard"),
-            ("📤 Upload Report", "upload"),
-            ("💬 Ask Questions", "questions"),
-            ("📈 Health Trends", "trends"),
-            ("📋 History", "history"),
-            ("⚙️ Settings", "settings")
+            ("Dashboard", "dashboard"),
+            ("Upload Report", "upload"),
+            ("Ask Questions", "questions"),
+            ("Health Trends", "trends"),
+            ("History", "history"),
+            ("Settings", "settings")
         ]
         
         # Custom CSS for navigation buttons
@@ -2196,12 +2231,12 @@ def show_main_app():
         st.markdown("---")
         
         # Recent Reports
-        st.markdown("### 📄 Recent Reports")
+        st.markdown("### Recent Reports")
         recent_reports = db.get_user_reports(user_id)[:3]
         
         if recent_reports:
             for report in recent_reports:
-                with st.expander(f"📅 {report['report_date'][:10]}", expanded=False):
+                with st.expander(f"{report['report_date'][:10]}", expanded=False):
                     st.markdown(f"""
                     <div style="font-size: 0.85rem;">
                         <strong>Tests:</strong> {report['total_tests']}<br>
@@ -2218,7 +2253,7 @@ def show_main_app():
         st.markdown("---")
         
         # Logout Button
-        if st.button("🚪 Logout", use_container_width=True, type="secondary"):
+        if st.button("Logout", use_container_width=True, type="secondary"):
             st.session_state.logged_in = False
             st.session_state.user_info = None
             st.session_state.current_report_id = None
@@ -2234,17 +2269,17 @@ def show_main_app():
     # Main Content Area - use current_page from session state
     current_page = st.session_state.current_page
     
-    if current_page == "📊 Dashboard":
+    if current_page == "Dashboard":
         show_dashboard_page(user_id)
-    elif current_page == "📤 Upload Report":
+    elif current_page == "Upload Report":
         show_upload_page(user_id)
-    elif current_page == "💬 Ask Questions":
+    elif current_page == "Ask Questions":
         show_qa_page(user_id)
-    elif current_page == "📈 Health Trends":
+    elif current_page == "Health Trends":
         show_trends_page(user_id)
-    elif current_page == "📋 History":
+    elif current_page == "History":
         show_history_page(user_id)
-    elif current_page == "⚙️ Settings":
+    elif current_page == "Settings":
         show_settings_page(user_id)
 
 
@@ -2252,7 +2287,7 @@ def show_dashboard_page(user_id: str):
     """Modern dashboard with health overview."""
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 2rem;">
-        <h1>📊 Health Dashboard</h1>
+        <h1>Health Dashboard</h1>
         <p>Your comprehensive health overview at a glance</p>
     </div>
     """, unsafe_allow_html=True)
@@ -2261,18 +2296,19 @@ def show_dashboard_page(user_id: str):
     
     if not reports:
         st.markdown("""
-        <div class="modern-card" style="text-align: center; padding: 4rem 2rem;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+        <div class="modern-card" style="text-align: center; padding: 2rem 2rem;">
             <h2 style="color: #667eea; margin-bottom: 1rem;">No Reports Yet</h2>
-            <p style="color: #666; font-size: 1.1rem; margin-bottom: 2rem;">
+            <p style="color: #666; font-size: 1.1rem;">
                 Upload your first medical report to see your health insights here
             </p>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📤 Upload Your First Report", type="primary", use_container_width=False):
-            st.session_state.page = "📤 Upload Report"
-            st.rerun()
+        col1,col2,col3 = st.columns([1,2,1])
+        with col2:
+            if st.button("Upload Your First Report", type="primary", use_container_width=True):
+                st.session_state.current_page = "Upload Report"
+                st.rerun()
     else:
         # Statistics Cards
         col1, col2, col3, col4 = st.columns(4)
@@ -2284,19 +2320,19 @@ def show_dashboard_page(user_id: str):
         
         with col1:
             st.markdown(f"""
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #550055 0%, #bb66aa 100%);">
                 <div class="stat-label">Total Reports</div>
                 <div class="stat-value">{len(reports)}</div>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">📄 All Time</div>
+                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">All Time</div>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
             st.markdown(f"""
-            <div class="stat-card">
+            <div class="stat-card" style="background:linear-gradient(135deg, #162a80 0%, #5a7fcf 100%);">
                 <div class="stat-label">Total Tests</div>
                 <div class="stat-value">{total_tests}</div>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">🔬 Analyzed</div>
+                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Analyzed</div>
             </div>
             """, unsafe_allow_html=True)
         
@@ -2306,7 +2342,7 @@ def show_dashboard_page(user_id: str):
             <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
                 <div class="stat-label">Normal Tests</div>
                 <div class="stat-value">{total_normal}</div>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">✅ {normal_pct:.1f}%</div>
+                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">{normal_pct:.1f}%</div>
             </div>
             """, unsafe_allow_html=True)
         
@@ -2315,52 +2351,139 @@ def show_dashboard_page(user_id: str):
             <div class="stat-card" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
                 <div class="stat-label">Abnormal Tests</div>
                 <div class="stat-value">{total_abnormal}</div>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">⚠️ Need Attention</div>
+                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Need Attention</div>
             </div>
             """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
         # Latest Report Summary
-        st.markdown("### 📋 Latest Report Summary")
+        st.markdown("### Latest Report Summary")
         
         latest_details = db.get_report_details(latest['id'])
         
-        col1, col2 = st.columns([2, 1])
+        # First Row - Quick Stats (Full Width)
+        st.markdown("""
+        <div class="modern-card">
+            <h4 style="color: #667eea;">Quick Stats</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.markdown(f"""
-            <div class="modern-card">
-                <h4 style="color: #667eea; margin-bottom: 1rem;">Report from {latest['report_date'][:10]}</h4>
-                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <strong>Summary:</strong><br>
-                    {latest_details['summary']}
-                </div>
-                <div style="background: #fff3cd; padding: 1rem; border-radius: 8px; border-left: 4px solid #ffc107;">
-                    <strong>💡 Recommendations:</strong><br>
-                    {latest_details['recommendations']}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-            <div class="modern-card">
-                <h4 style="color: #667eea; margin-bottom: 1rem;">Quick Stats</h4>
-            </div>
-            """, unsafe_allow_html=True)
-            
             st.metric("Total Tests", latest['total_tests'])
-            st.metric("Normal", latest['normal_count'], delta=None)
-            st.metric("Abnormal", latest['abnormal_count'], delta=None)
-            
-            if st.button("📄 View Full Report", use_container_width=True, type="primary"):
+        with col2:
+            st.metric("Normal", latest['normal_count'])
+        with col3:
+            st.metric("Abnormal", latest['abnormal_count'])
+        
+        # View Full Report Button in new row
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("View Full Report", use_container_width=True, type="primary", key="view_full_dashboard"):
                 st.session_state.current_report_id = latest['id']
+                st.session_state.current_page = "History"
                 st.rerun()
         
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Second Row - Report Info (Full Width)
+        st.markdown(f"""
+        <div class="modern-card">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Report from {latest['report_date'][:10]}</h4>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <strong>Filename:</strong> {latest['filename']}<br>
+                <strong>Total Tests:</strong> {latest['total_tests']}<br>
+                <strong>Normal:</strong> {latest['normal_count']}<br>
+                <strong>Abnormal:</strong> {latest['abnormal_count']}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Initialize toggle state in session state
+        if 'show_summary' not in st.session_state:
+            st.session_state.show_summary = False
+
+        # Third Row - Summary & Recommendations Toggle Button (Full Width)
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            # Change button text based on state
+            button_text = "Hide Summary & Recommendations" if st.session_state.show_summary else "View Summary & Recommendations"
+            button_icon = "▼" if st.session_state.show_summary else "▶"
+            
+            if st.button(f"{button_icon} {button_text}", use_container_width=True, type="secondary", key="view_summary"):
+                # Toggle the state
+                st.session_state.show_summary = not st.session_state.show_summary
+                st.rerun()
+
+        # Show/hide summary based on toggle state
+        if st.session_state.show_summary:  
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # Debug: Show raw content
+            # with st.expander("🔍 Debug - View Raw Data", expanded=False):
+            #     st.write("**Raw Summary Content:**")
+            #     st.code(latest_details['summary'])
+            #     st.write("**Raw Recommendations Content:**")
+            #     st.code(latest_details['recommendations'])
+            
+            # to render markdown properly into html
+            import markdown
+
+            # Convert markdown to HTML, extension for extra support of tables,newlines etc
+            summary_html = markdown.markdown(
+                latest_details['summary'],
+                extensions=['extra', 'nl2br']
+            )
+            recommendations_html = markdown.markdown(
+                latest_details['recommendations'],
+                extensions=['extra', 'nl2br']
+            )
+
+            st.markdown(f"""
+            <div class="modern-card">
+                <h3 style="color: #667eea; font-size: 1.5rem; font-weight: 700;">
+                    Summary
+                </h3>
+                <div class="summary-box-style">
+                    {summary_html}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            st.markdown(f"""
+            <div class="modern-card">
+                <h3 style="color: #667eea; font-size: 1.5rem; font-weight: 700;">
+                    Key Recommendations
+                </h3>
+                <div class="recommendation-box-style">
+                    {recommendations_html}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # with st.expander("Executive Summary", expanded=True):
+            #     st.markdown(f"""
+            #     <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1.5rem; border-radius: 12px; line-height: 1.8; font-size: 1rem; color: #333;">
+            #     {summary_html}
+            #     </div>
+            #     """, unsafe_allow_html=True)
+            
+            # with st.expander("Key Recommendations", expanded=True):
+            #     st.markdown(f"""
+            #     <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffe5a0 100%); padding: 1.5rem; border-radius: 12px; line-height: 1.8; font-size: 1rem; color: #856404;">
+            #     {recommendations_html}
+            #     </div>
+            #     """, unsafe_allow_html=True)
+            
         # Test Results Trend
         if len(reports) > 1:
-            st.markdown("### 📈 Test Results Trend")
+            st.markdown("### Test Results Trend")
             
             all_tests = set()
             for report in reports:
@@ -2410,7 +2533,7 @@ def show_upload_page(user_id: str):
     """Modern upload page with drag-and-drop."""
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 2rem;">
-        <h1>📤 Upload Medical Report</h1>
+        <h1>Upload Medical Report</h1>
         <p>Get instant AI-powered analysis of your lab results</p>
     </div>
     """, unsafe_allow_html=True)
@@ -2440,7 +2563,7 @@ def show_upload_page(user_id: str):
     # Upload Section
     st.markdown("""
     <div class="modern-card">
-        <h3 style="color: #667eea; margin-bottom: 1rem;">📁 Upload Your Report</h3>
+        <h3 style="color: #667eea;">Upload Your Report</h3>
     </div>
     """, unsafe_allow_html=True)
     
@@ -2452,201 +2575,289 @@ def show_upload_page(user_id: str):
     )
     
     if uploaded_file is not None:
-        st.success(f"✅ File selected: **{uploaded_file.name}**")
+        st.success(f"File selected: **{uploaded_file.name}**")
         
-        col1, col2 = st.columns([3, 1])
+        # File details section
+        st.markdown(f"""
+        <div class="alert-box alert-info">
+            <strong>File Details</strong><br>
+            <strong>Name:</strong> {uploaded_file.name}<br>
+            <strong>Size:</strong> {uploaded_file.size / 1024:.2f} KB<br>
+            <strong>Type:</strong> {uploaded_file.type}
+        </div>
+        """, unsafe_allow_html=True)
         
-        with col1:
-            st.markdown(f"""
-            <div class="alert-box alert-info">
-                <strong>📋 File Details</strong><br>
-                <strong>Name:</strong> {uploaded_file.name}<br>
-                <strong>Size:</strong> {uploaded_file.size / 1024:.2f} KB<br>
-                <strong>Type:</strong> {uploaded_file.type}
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Analyze button on new line, centered
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            analyze_button = st.button("Analyze Report", type="primary", use_container_width=True)
+        
+        if analyze_button:
+            # Save file
+            upload_dir = Path("uploads")
+            upload_dir.mkdir(exist_ok=True)
+            
+            file_path = upload_dir / f"{user_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uploaded_file.name}"
+            
+            with open(file_path, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+            
+            # Analysis with progress
+            st.markdown("""
+            <div class="modern-card" style="margin-top: 2rem;">
+                <h4 style="color: #667eea;">Analyzing Your Report...</h4>
             </div>
             """, unsafe_allow_html=True)
-        
-        with col2:
-            if st.button("🔍 Analyze Report", type="primary", use_container_width=True):
-                # Save file
-                upload_dir = Path("uploads")
-                upload_dir.mkdir(exist_ok=True)
+            
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            try:
+                # Step 1: Parse PDF
+                status_text.markdown("**Step 1/4:** Parsing PDF document...")
+                progress_bar.progress(25)
                 
-                file_path = upload_dir / f"{user_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uploaded_file.name}"
+                inputs = {"pdf_path": str(file_path)}
                 
-                with open(file_path, "wb") as f:
-                    f.write(uploaded_file.getbuffer())
+                # Step 2: Extract data
+                status_text.markdown("**Step 2/4:** Extracting medical data...")
+                progress_bar.progress(50)
                 
-                # Analysis with progress
-                st.markdown("""
-                <div class="modern-card" style="margin-top: 2rem;">
-                    <h4 style="color: #667eea; margin-bottom: 1rem;">🔄 Analyzing Your Report...</h4>
-                </div>
-                """, unsafe_allow_html=True)
+                final_state = analyzer_workflow.invoke(inputs)
                 
-                progress_bar = st.progress(0)
-                status_text = st.empty()
+                # Step 3: Analyze results
+                status_text.markdown("**Step 3/4:** Analyzing test results...")
+                progress_bar.progress(75)
                 
-                try:
-                    # Step 1: Parse PDF
-                    status_text.markdown("**Step 1/4:** 📄 Parsing PDF document...")
-                    progress_bar.progress(25)
+                output = generate_user_friendly_output(final_state)
+                
+                # Step 4: Generate report
+                status_text.markdown("**Step 4/4:** Generating report...")
+                progress_bar.progress(90)
+                
+                if output['success']:
+                    pdf_dir = Path("reports")
+                    pdf_dir.mkdir(exist_ok=True)
+                    pdf_path = pdf_dir / f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
                     
-                    inputs = {"pdf_path": str(file_path)}
+                    generate_pdf_report(output, str(pdf_path))
                     
-                    # Step 2: Extract data
-                    status_text.markdown("**Step 2/4:** 🔍 Extracting medical data...")
-                    progress_bar.progress(50)
+                    report_id = db.save_report(
+                        user_id,
+                        output,
+                        uploaded_file.name,
+                        str(pdf_path)
+                    )
                     
-                    final_state = analyzer_workflow.invoke(inputs)
+                    st.session_state.current_report_id = report_id
                     
-                    # Step 3: Analyze results
-                    status_text.markdown("**Step 3/4:** 🤖 Analyzing test results...")
-                    progress_bar.progress(75)
+                    progress_bar.progress(100)
+                    status_text.empty()
+                    progress_bar.empty()
                     
-                    output = generate_user_friendly_output(final_state)
+                    st.success("Report analyzed successfully!")
                     
-                    # Step 4: Generate report
-                    status_text.markdown("**Step 4/4:** 📝 Generating report...")
-                    progress_bar.progress(90)
+                    # Display Results
+                    st.markdown("<br>", unsafe_allow_html=True)
                     
-                    if output['success']:
-                        pdf_dir = Path("reports")
-                        pdf_dir.mkdir(exist_ok=True)
-                        pdf_path = pdf_dir / f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+                    # Results Header
+                    st.markdown("""
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <h2 style="color: #667eea; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+                            Analysis Results
+                        </h2>
+                        <p style="color: #666; font-size: 1.1rem;">Your comprehensive health report is ready</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Statistics Cards
+                    stats = output['statistics']
+                    
+                    col1, col2, col3, col4 = st.columns(4)
+                    
+                    with col1:
+                        st.markdown(f"""
+                        <div class="stat-card" style="min-height: 180px;">
+                            <div class="stat-label">Total Tests</div>
+                            <div class="stat-value">{stats['total_tests']}</div>
+                            <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Analyzed</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    with col2:
+                        st.markdown(f"""
+                        <div class="stat-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); min-height: 180px;">
+                            <div class="stat-label">Normal</div>
+                            <div class="stat-value">{stats['normal_count']}</div>
+                            <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Healthy</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    with col3:
+                        st.markdown(f"""
+                        <div class="stat-card" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); min-height: 180px;">
+                            <div class="stat-label">Abnormal</div>
+                            <div class="stat-value">{stats['abnormal_count']}</div>
+                            <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Attention</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    with col4:
+                        st.markdown(f"""
+                        <div class="stat-card" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); min-height: 180px;">
+                            <div class="stat-label">No Reference</div>
+                            <div class="stat-value">{stats['no_reference_count']}</div>
+                            <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Data Only</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    st.markdown("<br><br>", unsafe_allow_html=True)
+                    
+                    # Summary and Recommendations
+                    import markdown
+                    # Convert markdown to HTML
+                    summary_html = markdown.markdown(
+                        output['summary'],
+                        extensions=['extra', 'nl2br']
+                    )
+                    recommendations_html = markdown.markdown(
+                        output['recommendations'],
+                        extensions=['extra', 'nl2br']
+                    )
+
+                    st.markdown(f"""
+                    <div class="modern-card">
+                        <h3 style="color: #667eea; font-size: 1.5rem; font-weight: 700;">
+                            Summary
+                        </h3>
+                        <div class="summary-box-style">
+                            {summary_html}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    st.markdown("<br>", unsafe_allow_html=True)
+
+                    st.markdown(f"""
+                    <div class="modern-card">
+                        <h3 style="color: #667eea; font-size: 1.5rem; font-weight: 700;">
+                            Key Recommendations
+                        </h3>
+                        <div class="recommendation-box-style">
+                            {recommendations_html}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    # Abnormal Tests Section
+                    abnormal = [r for r in output['detailed_results'] if r['status'] in ['high', 'low']]
+                    
+                    if abnormal:
+                        st.markdown("""
+                        <div style="margin: 2rem 0 1.5rem 0;">
+                            <h3 style="color: #dc3545; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+                                Tests Requiring Attention
+                            </h3>
+                            <p style="color: #666; font-size: 1rem;">
+                                These results are outside the normal range and may need follow-up
+                            </p>
+                        </div>
+                        """, unsafe_allow_html=True)
                         
-                        generate_pdf_report(output, str(pdf_path))
-                        
-                        report_id = db.save_report(
-                            user_id,
-                            output,
-                            uploaded_file.name,
-                            str(pdf_path)
-                        )
-                        
-                        st.session_state.current_report_id = report_id
-                        
-                        progress_bar.progress(100)
-                        status_text.markdown("**✅ Analysis complete!**")
-                        
-                        st.balloons()
-                        st.success("🎉 Report analyzed successfully!")
-                        
-                        # Display Results
-                        st.markdown("<br>", unsafe_allow_html=True)
-                        st.markdown("## 📊 Analysis Results")
-                        
-                        # Statistics
-                        col1, col2, col3, col4 = st.columns(4)
-                        
-                        stats = output['statistics']
-                        
-                        with col1:
-                            st.markdown(f"""
-                            <div class="metric-card info">
-                                <div style="font-size: 2rem; font-weight: 700; color: #17a2b8;">{stats['total_tests']}</div>
-                                <div style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Total Tests</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        with col2:
-                            st.markdown(f"""
-                            <div class="metric-card success">
-                                <div style="font-size: 2rem; font-weight: 700; color: #28a745;">{stats['normal_count']}</div>
-                                <div style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Normal</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        with col3:
-                            st.markdown(f"""
-                            <div class="metric-card danger">
-                                <div style="font-size: 2rem; font-weight: 700; color: #dc3545;">{stats['abnormal_count']}</div>
-                                <div style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Abnormal</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        with col4:
-                            st.markdown(f"""
-                            <div class="metric-card warning">
-                                <div style="font-size: 2rem; font-weight: 700; color: #ffc107;">{stats['no_reference_count']}</div>
-                                <div style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">No Reference</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        st.markdown("<br>", unsafe_allow_html=True)
-                        
-                        # Summary and Recommendations
-                        col1, col2 = st.columns(2)
-                        
-                        with col1:
-                            st.markdown(f"""
-                            <div class="modern-card">
-                                <h4 style="color: #667eea; margin-bottom: 1rem;">📋 Summary</h4>
-                                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; line-height: 1.6;">
-                                    {output['summary']}
-                                </div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        with col2:
-                            st.markdown(f"""
-                            <div class="modern-card">
-                                <h4 style="color: #667eea; margin-bottom: 1rem;">💡 Recommendations</h4>
-                                <div style="background: #fff3cd; padding: 1rem; border-radius: 8px; line-height: 1.6; border-left: 4px solid #ffc107;">
-                                    {output['recommendations']}
-                                </div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        # Abnormal Tests
-                        abnormal = [r for r in output['detailed_results'] if r['status'] in ['high', 'low']]
-                        
-                        if abnormal:
-                            st.markdown("### ⚠️ Tests Requiring Attention")
+                        # Display abnormal tests
+                        for i in range(0, len(abnormal), 2):
+                            cols = st.columns(2)
                             
-                            for result in abnormal:
-                                status_emoji = "📈" if result['status'] == 'high' else "📉"
-                                status_color = "#dc3545" if result['status'] == 'high' else "#ffc107"
-                                
-                                st.markdown(f"""
-                                <div class="modern-card" style="border-left: 4px solid {status_color};">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div>
-                                            <strong style="font-size: 1.1rem; color: #333;">{status_emoji} {result['test_name']}</strong>
-                                            <div style="margin-top: 0.5rem; color: #666;">
-                                                <strong>Value:</strong> {result['test_value']} {result['units']}<br>
-                                                <strong>Normal Range:</strong> {result['reference_range']}
+                            for idx in range(2):
+                                if i + idx < len(abnormal):
+                                    result = abnormal[i + idx]
+                                    status_emoji = "📈" if result['status'] == 'high' else "📉"
+                                    status_color = "#dc3545" if result['status'] == 'high' else "#ffc107"
+                                    status_bg = "#f8d7da" if result['status'] == 'high' else "#fff3cd"
+                                    
+                                    with cols[idx]:
+                                        st.markdown(f"""
+                                        <div class="modern-card" style="border-left: 4px solid {status_color}; background: {status_bg}; min-height: 220px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                                <h4 style="color: #333; margin: 0; font-size: 1.2rem; flex: 1;">
+                                                    {status_emoji} {result['test_name']}
+                                                </h4>
+                                                <span class="test-status status-{result['status']}" style="margin-left: 1rem;">
+                                                    {result['status'].upper()}
+                                                </span>
                                             </div>
+                                            <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                                <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; font-size: 0.95rem;">
+                                                    <strong style="color: #666;">Value:</strong>
+                                                    <span style="color: {status_color}; font-weight: 700; font-size: 1.1rem;">
+                                                        {result['test_value']} {result['units']}
+                                                    </span>
+                                                    <strong style="color: #666;">Normal Range:</strong>
+                                                    <span style="color: #333;">{result['reference_range']}</span>
+                                                </div>
+                                            </div>
+                                            {f'<div style="background: white; padding: 1rem; border-radius: 8px; font-size: 0.9rem; line-height: 1.6; color: #555;"><strong>Analysis:</strong><br>{result.get("analysis", "")}</div>' if result.get('analysis') else ''}
                                         </div>
-                                        <div>
-                                            <span class="test-status status-{result['status']}">{result['status'].upper()}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                """, unsafe_allow_html=True)
+                                        """, unsafe_allow_html=True)
                         
-                        # Download Button
                         st.markdown("<br>", unsafe_allow_html=True)
-                        
+                    
+                    # Download Section
+                    st.markdown("---")
+                    st.markdown("""
+                    <div style="text-align: center; margin: 2rem 0 1rem 0;">
+                        <h3 style="color: #667eea; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+                            Download Your Report
+                        </h3>
+                        <p style="color: #666; font-size: 1rem;">
+                            Get a comprehensive PDF report with all your test results and analysis
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Center the download button
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
                         with open(pdf_path, 'rb') as f:
                             st.download_button(
-                                label="📥 Download Full Report (PDF)",
+                                label="Download Full Report (PDF)",
                                 data=f,
                                 file_name=f"medical_report_{datetime.now().strftime('%Y%m%d')}.pdf",
                                 mime="application/pdf",
-                                use_container_width=False,
+                                use_container_width=True,
                                 type="primary"
                             )
                     
-                    else:
-                        st.error(f"❌ Error: {output['details']}")
-                        st.info(output['suggestion'])
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    
+                    # Action buttons - FIXED KEYS HERE
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        if st.button("View Dashboard", use_container_width=True, type="secondary", key="upload_nav_dashboard"):
+                            st.session_state.current_page = 'Dashboard'
+                            st.rerun()
+                    
+                    with col2:
+                        if st.button("Ask Questions", use_container_width=True, type="secondary", key="upload_nav_questions"):
+                            st.session_state.current_page = 'Ask Questions'
+                            st.rerun()
+                    
+                    with col3:
+                        if st.button("Upload Another", use_container_width=True, type="secondary", key="upload_another"):
+                            st.rerun()
                 
-                except Exception as e:
-                    st.error(f"❌ An error occurred: {str(e)}")
-                    import traceback
-                    with st.expander("🔍 View Error Details"):
-                        st.code(traceback.format_exc())
+                else:
+                    st.error(f"Error: {output['details']}")
+                    st.info(output['suggestion'])
+            
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+                import traceback
+                with st.expander("View Error Details"):
+                    st.code(traceback.format_exc())
 
 
 def show_qa_page(user_id: str):
@@ -2701,7 +2912,7 @@ def show_qa_page(user_id: str):
     # Example Questions
     with st.expander("💡 Example Questions You Can Ask"):
         st.markdown("""
-        <div style="columns: 2; column-gap: 2rem;">
+        <div style="columns: 2; column-gap: 2rem; padding: 1rem;">
             <div style="margin-bottom: 1rem;">
                 <strong>📊 About Your Results:</strong>
                 <ul style="margin-top: 0.5rem;">
@@ -3389,8 +3600,8 @@ def show_footer():
     # Medical Disclaimer Section
     st.markdown("""
     <div style='text-align: center; padding: 2rem; background: linear-gradient(135deg, #fff3cd 0%, #ffe5a0 100%); 
-         border-radius: 12px; margin: 2rem 0; border-left: 4px solid #ffc107;'>
-        <h3 style='color: #856404; margin-bottom: 1rem;'>⚠️ Important Medical Disclaimer</h3>
+         border-radius: 12px; margin: 2rem 0; border-left: 4px solid rgb(246, 213, 116)'>
+        <h3 style='color: #856404;'>Important Medical Disclaimer</h3>
         <p style='color: #856404; line-height: 1.8;'>
             <strong>Medical Analysis Agent</strong> is an informational tool designed to help you better understand your medical laboratory reports. 
             This platform uses artificial intelligence to analyze and interpret medical data, but it is <strong>NOT a substitute for professional medical advice</strong>.
