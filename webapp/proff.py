@@ -61,6 +61,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 st.markdown("""
 <style>
     /* Import Google Fonts */
@@ -85,7 +86,7 @@ st.markdown("""
     /* Hero Header */
     .hero-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 3rem 2rem;
+        padding: 2rem 2rem;
         border-radius: 20px;
         color: white;
         text-align: center;
@@ -291,17 +292,30 @@ st.markdown("""
     
     .user-message {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* linear-gradient(135deg, #a1c4fd, #c2e9fb) */
         color: white;
+        /* #3948f6 */
         margin-left: 15%;
         border-bottom-right-radius: 4px;
     }
     
     .assistant-message {
+        /*
         background: white;
         color: #333;
         margin-right: 15%;
         border: 1px solid #e0e7ff;
         border-bottom-left-radius: 4px;
+        */        
+   
+        margin-right: 15%;
+        border-left: 4px solid rgba(142, 187, 142, 0.82); 
+        border-bottom-left-radius: 4px;
+        background: rgba(152, 251, 152, 0.26);
+        padding: 1.5rem;
+        line-height: 1.8;
+        font-size: 1rem;
+        color: #333;
     }
     
     /* Progress Indicators */
@@ -615,6 +629,59 @@ st.markdown("""
             
 </style>
 """,unsafe_allow_html=True)
+
+
+# custom style for grid view in history section
+st.markdown("""
+    <style>
+        .report-card {
+            background: whitesmoke;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .report-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .report-icon {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+        .report-title {
+            margin: 0;
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .report-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0 0 1.5rem 0;
+        }
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .stat-item2 {
+            text-align: center;
+        }
+        .stat-label2 {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        .stat-value2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 
 # Email Configuration
 class EmailService:
@@ -1599,6 +1666,11 @@ if 'view_report_modal' not in st.session_state:
     st.session_state.view_report_modal = False
 
 
+# for view details in history section
+if 'show_report_details' not in st.session_state:
+    st.session_state.show_report_details = False
+
+
 # ============== VALIDATION FUNCTIONS ==============
 
 def validate_email(email: str) -> bool:
@@ -1938,7 +2010,7 @@ def show_verify_email_page():
                 st.rerun()
         
         with col_b:
-            if st.button("⬅Back to Login", use_container_width=True):
+            if st.button("Back to Login", use_container_width=True):
                 st.session_state.auth_stage = 'login'
                 st.rerun()
 
@@ -2099,7 +2171,7 @@ def show_main_app():
     # Modern Sidebar
     with st.sidebar:
         st.markdown("""
-        <div style="text-align: center; padding: 1.5rem 0; border-bottom: 2px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem;">
+        <div style="text-align: center; padding: 0 0 1.5rem; border-bottom: 2px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem;">
             <h2 style="margin: 0; font-size: 1.5rem;">Medical Analysis Agent</h2>
             <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Your Health Dashboard</p>
         </div>
@@ -2231,26 +2303,26 @@ def show_main_app():
         st.markdown("---")
         
         # Recent Reports
-        st.markdown("### Recent Reports")
-        recent_reports = db.get_user_reports(user_id)[:3]
+        # st.markdown("### Recent Reports")
+        # recent_reports = db.get_user_reports(user_id)[:3]
         
-        if recent_reports:
-            for report in recent_reports:
-                with st.expander(f"{report['report_date'][:10]}", expanded=False):
-                    st.markdown(f"""
-                    <div style="font-size: 0.85rem;">
-                        <strong>Tests:</strong> {report['total_tests']}<br>
-                        <strong>Normal:</strong> {report['normal_count']}<br>
-                        <strong>Abnormal:</strong> {report['abnormal_count']}
-                    </div>
-                    """, unsafe_allow_html=True)
-                    if st.button("View Details", key=f"view_{report['id']}", use_container_width=True):
-                        st.session_state.current_report_id = report['id']
-                        st.rerun()
-        else:
-            st.info("No reports yet! Upload your first report to get started.")
+        # if recent_reports:
+        #     for report in recent_reports:
+        #         with st.expander(f"{report['report_date'][:10]}", expanded=False):
+        #             st.markdown(f"""
+        #             <div style="font-size: 0.85rem;">
+        #                 <strong>Tests:</strong> {report['total_tests']}<br>
+        #                 <strong>Normal:</strong> {report['normal_count']}<br>
+        #                 <strong>Abnormal:</strong> {report['abnormal_count']}
+        #             </div>
+        #             """, unsafe_allow_html=True)
+        #             if st.button("View Details", key=f"view_{report['id']}", use_container_width=True):
+        #                 st.session_state.current_report_id = report['id']
+        #                 st.rerun()
+        # else:
+        #     st.info("No reports yet! Upload your first report to get started.")
         
-        st.markdown("---")
+        # st.markdown("---")
         
         # Logout Button
         if st.button("Logout", use_container_width=True, type="secondary"):
@@ -2542,17 +2614,16 @@ def show_upload_page(user_id: str):
     col1, col2, col3, col4 = st.columns(4)
     
     features = [
-        ("📄", "PDF Support", "Upload lab reports in PDF format"),
+        ("📄", "PDF Support", "Upload lab reports"),
         ("🤖", "AI Analysis", "Instant intelligent analysis"),
         ("📊", "Visual Reports", "Easy-to-understand charts"),
-        ("💾", "Auto Save", "Reports saved automatically")
+        ("💾", "Auto Save", "Reports saved automatic")
     ]
     
     for col, (icon, title, desc) in zip([col1, col2, col3, col4], features):
         with col:
             st.markdown(f"""
-            <div class="modern-card" style="text-align: center; padding: 1.5rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">{icon}</div>
+            <div class="modern-card" style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #eaf3ff 0%, #d4e5ff 100%);">
                 <div style="font-weight: 600; color: #333; margin-bottom: 0.25rem;">{title}</div>
                 <div style="font-size: 0.85rem; color: #666;">{desc}</div>
             </div>
@@ -2830,24 +2901,24 @@ def show_upload_page(user_id: str):
                                 type="primary"
                             )
                     
-                    st.markdown("<br>", unsafe_allow_html=True)
+                    # st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # Action buttons - FIXED KEYS HERE
-                    col1, col2, col3 = st.columns(3)
+                    # # Action buttons - FIXED KEYS HERE
+                    # col1, col2, col3 = st.columns(3)
                     
-                    with col1:
-                        if st.button("View Dashboard", use_container_width=True, type="secondary", key="upload_nav_dashboard"):
-                            st.session_state.current_page = 'Dashboard'
-                            st.rerun()
+                    # with col1:
+                    #     if st.button("View Dashboard", use_container_width=True, type="secondary", key="upload_nav_dashboard"):
+                    #         st.session_state.current_page = 'Dashboard'
+                    #         st.rerun()
                     
-                    with col2:
-                        if st.button("Ask Questions", use_container_width=True, type="secondary", key="upload_nav_questions"):
-                            st.session_state.current_page = 'Ask Questions'
-                            st.rerun()
+                    # with col2:
+                    #     if st.button("Ask Questions", use_container_width=True, type="secondary", key="upload_nav_questions"):
+                    #         st.session_state.current_page = 'Ask Questions'
+                    #         st.rerun()
                     
-                    with col3:
-                        if st.button("Upload Another", use_container_width=True, type="secondary", key="upload_another"):
-                            st.rerun()
+                    # with col3:
+                    #     if st.button("Upload Another", use_container_width=True, type="secondary", key="upload_another"):
+                    #         st.rerun()
                 
                 else:
                     st.error(f"Error: {output['details']}")
@@ -2864,7 +2935,7 @@ def show_qa_page(user_id: str):
     """Modern Q&A page with chat interface."""
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 2rem;">
-        <h1>💬 Ask Your Medical Assistant</h1>
+        <h1>Ask Your Medical Assistant</h1>
         <p>Get personalized answers about your health reports</p>
     </div>
     """, unsafe_allow_html=True)
@@ -2874,47 +2945,37 @@ def show_qa_page(user_id: str):
     if not reports:
         st.markdown("""
         <div class="modern-card" style="text-align: center; padding: 3rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
             <h3 style="color: #667eea;">No Reports Available</h3>
-            <p style="color: #666; margin: 1rem 0 2rem 0;">Upload a medical report first to start asking questions</p>
+            <p style="color: #666; margin: 1rem 0;">Upload a medical report first to start asking questions</p>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📤 Upload Report", type="primary"):
-            st.rerun()
-        return
+        col1,col2,col3 = st.columns([1,2,1])
+        with col2:
+            if st.button("Upload Report", type="primary",use_container_width=True):
+                st.rerun()
+            return
     
     # Report Selection
-    col1, col2 = st.columns([3, 1])
+    # col1, col2 = st.columns([3, 1])
     
-    with col1:
-        report_options = {
-            "🌐 All Reports (General Questions)": None,
-            **{f"📄 {r['report_date'][:10]} - {r['filename']}": r['id'] for r in reports}
-        }
-        
-        selected_report = st.selectbox(
-            "Select context for your questions:",
-            options=list(report_options.keys()),
-            key="qa_report_select"
-        )
-        
-        report_id = report_options[selected_report]
+    report_options = {
+        "All Reports (General Questions)": None,
+        **{f"📄 {r['report_date'][:10]} - {r['filename']}": r['id'] for r in reports}
+    }
     
-    with col2:
-        if st.button("🗑️ Clear Chat", use_container_width=True):
-            db.clear_chat_history(user_id, report_id if report_id else None)
-            st.success("Chat cleared!")
-            st.rerun()
-    
-    st.markdown("<br>", unsafe_allow_html=True)
+    selected_report = st.selectbox(
+        "Select context for your questions:",
+        options=list(report_options.keys()),
+        key="qa_report_select"
+    )
     
     # Example Questions
-    with st.expander("💡 Example Questions You Can Ask"):
+    with st.expander("Example Questions You Can Ask"):
         st.markdown("""
         <div style="columns: 2; column-gap: 2rem; padding: 1rem;">
             <div style="margin-bottom: 1rem;">
-                <strong>📊 About Your Results:</strong>
+                <strong>About Your Results:</strong>
                 <ul style="margin-top: 0.5rem;">
                     <li>What do my recent test results mean?</li>
                     <li>Explain my cholesterol levels</li>
@@ -2922,7 +2983,7 @@ def show_qa_page(user_id: str):
                 </ul>
             </div>
             <div style="margin-bottom: 1rem;">
-                <strong>📈 Trends & History:</strong>
+                <strong>Trends & History:</strong>
                 <ul style="margin-top: 0.5rem;">
                     <li>How has my blood sugar changed?</li>
                     <li>Show improvements over time</li>
@@ -2930,7 +2991,7 @@ def show_qa_page(user_id: str):
                 </ul>
             </div>
             <div style="margin-bottom: 1rem;">
-                <strong>💊 Health Advice:</strong>
+                <strong>Health Advice:</strong>
                 <ul style="margin-top: 0.5rem;">
                     <li>What should I do about high cholesterol?</li>
                     <li>Diet recommendations for my condition</li>
@@ -2938,7 +2999,7 @@ def show_qa_page(user_id: str):
                 </ul>
             </div>
             <div style="margin-bottom: 1rem;">
-                <strong>🔍 Understanding Terms:</strong>
+                <strong>Understanding Terms:</strong>
                 <ul style="margin-top: 0.5rem;">
                     <li>What is HbA1c?</li>
                     <li>Explain thyroid function tests</li>
@@ -2948,7 +3009,18 @@ def show_qa_page(user_id: str):
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("<br>", unsafe_allow_html=True)
+    # st.markdown("<br>", unsafe_allow_html=True)
+
+    # clear chat section
+    report_id = report_options[selected_report]
+
+    col1,col2,col3 = st.columns([3,2,3])
+    with col2:
+        if st.button("Clear Chat", use_container_width=True):
+            db.clear_chat_history(user_id, report_id if report_id else None)
+            st.success("Chat cleared!")
+            st.rerun()
+
     
     # Chat Container
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -2960,37 +3032,57 @@ def show_qa_page(user_id: str):
     chat_history = db.get_chat_history(user_id, report_id)
     
     if chat_history:
-        st.markdown("### 💬 Conversation History")
+        st.markdown("### Conversation History")
         
-        for msg in chat_history:
-            role = msg['role']
-            message = msg['message']
-            timestamp = msg['timestamp']
-            
-            if role == 'user':
-                st.markdown(f"""
-                <div class="chat-message user-message">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <strong>👤 You</strong>
-                        <span style="font-size: 0.8rem; opacity: 0.8;">{timestamp[:16]}</span>
-                    </div>
-                    <div>{message}</div>
-                </div>
-                """, unsafe_allow_html=True)
+        # Group messages into Q&A pairs (chat_history is already newest first from DB)
+        qa_pairs = []
+        i = 0
+        while i < len(chat_history):
+            # Messages come as: newest first (assistant answer, then user question)
+            if chat_history[i]['role'] == 'assistant':
+                assistant_msg = chat_history[i]
+                
+                # Look for corresponding user question
+                user_msg = None
+                if i + 1 < len(chat_history) and chat_history[i + 1]['role'] == 'user':
+                    user_msg = chat_history[i + 1]
+                    i += 2
+                else:
+                    i += 1
+                
+                if user_msg:
+                    qa_pairs.append((assistant_msg, user_msg))
             else:
-                st.markdown(f"""
-                <div class="chat-message assistant-message">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <strong>🤖 Medical Assistant</strong>
-                        <span style="font-size: 0.8rem; opacity: 0.8;">{timestamp[:16]}</span>
-                    </div>
-                    <div style="line-height: 1.7;">{message}</div>
+                i += 1
+        
+        # Reverse pairs so oldest appears first, newest at bottom
+        qa_pairs.reverse()
+        
+        # Display Q&A pairs (oldest first, newest last)
+        for assistant_msg, user_msg in qa_pairs:
+            # Display user question first, then answer
+            st.markdown(f"""
+            <div class="chat-message user-message">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <strong>You</strong>
+                    <span style="font-size: 0.8rem; opacity: 0.8;">{user_msg['timestamp'][:16]}</span>
                 </div>
-                """, unsafe_allow_html=True)
+                <div>{user_msg['message']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown(f"""
+            <div class="chat-message assistant-message">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <strong>Medical Assistant</strong>
+                    <span style="font-size: 0.8rem; opacity: 0.8;">{assistant_msg['timestamp'][:16]}</span>
+                </div>
+                <div style="line-height: 1.7;">{assistant_msg['message']}</div>
+            </div>
+            """, unsafe_allow_html=True)
     else:
         st.markdown("""
         <div class="modern-card" style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem;">💭</div>
             <h4 style="color: #667eea; margin-bottom: 0.5rem;">Start a Conversation</h4>
             <p style="color: #666;">Ask me anything about your medical reports and health data</p>
         </div>
@@ -2999,8 +3091,7 @@ def show_qa_page(user_id: str):
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Input Section
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### ✍️ Ask a Question")
+    st.markdown("### Ask a Question")
     
     question = st.text_area(
         "Type your question here...",
@@ -3013,10 +3104,10 @@ def show_qa_page(user_id: str):
     col1, col2 = st.columns([1, 5])
     
     with col1:
-        ask_button = st.button("🚀 Ask", type="primary", use_container_width=True)
+        ask_button = st.button("Ask", type="primary", use_container_width=True)
     
     if ask_button and question:
-        with st.spinner("🤔 Analyzing your question..."):
+        with st.spinner("Analyzing your question..."):
             # Save user question
             db.save_chat_message(
                 user_id,
@@ -3043,7 +3134,7 @@ def show_trends_page(user_id: str):
     """Modern trends page with interactive charts."""
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 2rem;">
-        <h1>📈 Health Trends</h1>
+        <h1>Health Trends</h1>
         <p>Track your health metrics over time</p>
     </div>
     """, unsafe_allow_html=True)
@@ -3053,7 +3144,6 @@ def show_trends_page(user_id: str):
     if len(reports) < 2:
         st.markdown("""
         <div class="modern-card" style="text-align: center; padding: 3rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
             <h3 style="color: #667eea;">Need More Data</h3>
             <p style="color: #666; margin: 1rem 0;">Upload at least 2 reports to see health trends</p>
         </div>
@@ -3085,7 +3175,7 @@ def show_trends_page(user_id: str):
     
     st.markdown(f"""
     <div class="modern-card">
-        <h3 style="color: #667eea; margin-bottom: 0.5rem;">📊 Tracking {len(trending_tests)} Tests</h3>
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">Tracking {len(trending_tests)} Tests</h3>
         <p style="color: #666;">Monitoring your health metrics across {len(reports)} reports</p>
     </div>
     """, unsafe_allow_html=True)
@@ -3093,7 +3183,7 @@ def show_trends_page(user_id: str):
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Tabs for different views
-    tabs = st.tabs(["📊 All Trends", "⚠️ Abnormal Trends", "🎯 Custom Analysis"])
+    tabs = st.tabs(["All Trends", "Abnormal Trends", "Custom Analysis"])
     
     with tabs[0]:
         st.markdown("### All Test Trends")
@@ -3110,7 +3200,7 @@ def show_trends_page(user_id: str):
                     data = trending_tests[test_name]
                     
                     with col:
-                        with st.expander(f"📈 {test_name}", expanded=False):
+                        with st.expander(f"{test_name}", expanded=False):
                             df = pd.DataFrame(data)
                             df['date'] = pd.to_datetime(df['date'])
                             df['numeric_value'] = pd.to_numeric(df['value'], errors='coerce')
@@ -3149,7 +3239,7 @@ def show_trends_page(user_id: str):
                                 )
     
     with tabs[1]:
-        st.markdown("### ⚠️ Tests with Abnormal Results")
+        st.markdown("### Tests with Abnormal Results")
         
         abnormal_tests = {
             k: v for k, v in trending_tests.items()
@@ -3159,14 +3249,13 @@ def show_trends_page(user_id: str):
         if not abnormal_tests:
             st.markdown("""
             <div class="modern-card" style="text-align: center; padding: 2rem; background: #d4edda;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
                 <h4 style="color: #28a745;">All Tests Normal!</h4>
                 <p style="color: #155724;">No abnormal trends detected in your recent reports</p>
             </div>
             """, unsafe_allow_html=True)
         else:
             for test_name, data in abnormal_tests.items():
-                with st.expander(f"⚠️ {test_name}", expanded=True):
+                with st.expander(f"{test_name}", expanded=True):
                     df = pd.DataFrame(data)
                     df['date'] = pd.to_datetime(df['date'])
                     df['numeric_value'] = pd.to_numeric(df['value'], errors='coerce')
@@ -3222,7 +3311,7 @@ def show_trends_page(user_id: str):
                             """, unsafe_allow_html=True)
     
     with tabs[2]:
-        st.markdown("### 🎯 Custom Trend Analysis")
+        st.markdown("### Custom Trend Analysis")
         st.markdown("Compare multiple tests side by side")
         
         selected_tests = st.multiselect(
@@ -3270,7 +3359,7 @@ def show_trends_page(user_id: str):
             st.plotly_chart(fig, use_container_width=True)
             
             # Statistics summary
-            st.markdown("### 📊 Statistics Summary")
+            st.markdown("### Statistics Summary")
             
             cols = st.columns(len(selected_tests))
             
@@ -3297,7 +3386,7 @@ def show_history_page(user_id: str):
     """Modern history page with search and filters."""
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 2rem;">
-        <h1>📋 Report History</h1>
+        <h1>Report History</h1>
         <p>View and manage all your medical reports</p>
     </div>
     """, unsafe_allow_html=True)
@@ -3307,9 +3396,8 @@ def show_history_page(user_id: str):
     if not reports:
         st.markdown("""
         <div class="modern-card" style="text-align: center; padding: 3rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
             <h3 style="color: #667eea;">No Reports Yet</h3>
-            <p style="color: #666; margin: 1rem 0 2rem 0;">Upload your first medical report to get started</p>
+            <p style="color: #666; margin: 1rem 0;">Upload your first medical report to get started</p>
         </div>
         """, unsafe_allow_html=True)
         return
@@ -3317,8 +3405,8 @@ def show_history_page(user_id: str):
     # Summary Stats
     st.markdown(f"""
     <div class="modern-card">
-        <h3 style="color: #667eea; margin-bottom: 0.5rem;">📚 Your Medical Archive</h3>
-        <p style="color: #666;">You have <strong>{len(reports)}</strong> report(s) in your history</p>
+        <h3 style="color: #667eea; padding: 0.5rem 0 1rem;">Your Medical Archive</h3>
+        <p style="color: #666; margin-bottom: 0.5rem;">You have <strong>{len(reports)}</strong> report(s) in your history</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -3328,7 +3416,7 @@ def show_history_page(user_id: str):
     col1, col2, col3 = st.columns([3, 2, 1])
     
     with col1:
-        search = st.text_input("🔍 Search by filename:", "", key="history_search")
+        search = st.text_input("Search by filename:", "", key="history_search")
     
     with col2:
         sort_by = st.selectbox("Sort by:", ["Newest First", "Oldest First"], key="history_sort")
@@ -3346,9 +3434,14 @@ def show_history_page(user_id: str):
     
     st.markdown("<br>", unsafe_allow_html=True)
     
+    # Check if we should show report details
+    if st.session_state.get('show_report_details') and st.session_state.get('current_report_id'):
+        show_report_details_model(st.session_state.current_report_id, user_id)
+        return  # Don't show the list when viewing details
+    
     # Display reports
     if view_mode == "Grid":
-        # Grid view with cards
+        
         for i in range(0, len(filtered_reports), 2):
             col1, col2 = st.columns(2)
             
@@ -3359,37 +3452,42 @@ def show_history_page(user_id: str):
                     with col:
                         st.markdown(f"""
                         <div class="report-card">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                                <div>
-                                    <h4 style="margin: 0; color: #333;">📄 {report['filename'][:30]}...</h4>
-                                    <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.85rem;">
-                                        📅 {report['report_date'][:10]}
-                                    </p>
-                                </div>
+                            <div class="report-header">
+                                <span class="report-icon">📄</span>
+                                <h4 class="report-title">{report['filename'][:30]}{'...' if len(report['filename']) > 30 else ''}</h4>
                             </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin: 1rem 0;">
-                                <div style="text-align: center; background: #f8f9fa; padding: 0.75rem; border-radius: 8px;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #17a2b8;">{report['total_tests']}</div>
-                                    <div style="font-size: 0.75rem; color: #666;">Total</div>
+                            <p class="report-date">Date: {report['report_date'][:10]}</p>
+                            <div class="report-stats">
+                                <div class="stat-item2">
+                                    <div class="stat-label2">Total</div>
+                                    <div class="stat-value2">{report['total_tests']}</div>
                                 </div>
-                                <div style="text-align: center; background: #d4edda; padding: 0.75rem; border-radius: 8px;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #28a745;">{report['normal_count']}</div>
-                                    <div style="font-size: 0.75rem; color: #155724;">Normal</div>
+                                <div class="stat-item2">
+                                    <div class="stat-label2">Normal</div>
+                                    <div class="stat-value2">{report['normal_count']}</div>
                                 </div>
-                                <div style="text-align: center; background: #f8d7da; padding: 0.75rem; border-radius: 8px;">
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: #dc3545;">{report['abnormal_count']}</div>
-                                    <div style="font-size: 0.75rem; color: #721c24;">Abnormal</div>
+                                <div class="stat-item2">
+                                    <div class="stat-label2">Abnormal</div>
+                                    <div class="stat-value2">{report['abnormal_count']}</div>
                                 </div>
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
                         
-                        if st.button("👁️ View Details", key=f"view_detail_{report['id']}", use_container_width=True):
+                        if st.button(
+                            "VIEW DETAILS",
+                            key=f"view_btn_{report['id']}",
+                            use_container_width=False,
+                            type="secondary"
+                        ):
                             st.session_state.current_report_id = report['id']
-                            st.session_state.view_report_modal = True
+                            st.session_state.show_report_details = True
+                            st.rerun()
+                        
+                        st.markdown("<br>", unsafe_allow_html=True)
+    
     else:
-        # List view with detailed table
+        # List view with expanders
         for report in filtered_reports:
             with st.expander(f"📄 {report['report_date'][:10]} - {report['filename']}", expanded=False):
                 report_details = db.get_report_details(report['id'])
@@ -3398,24 +3496,30 @@ def show_history_page(user_id: str):
                 col1, col2, col3 = st.columns(3)
                 
                 with col1:
-                    st.markdown("**📊 Statistics**")
+                    st.markdown("**Statistics**")
                     st.write(f"Total Tests: {report['total_tests']}")
                     st.write(f"Normal: {report['normal_count']}")
                     st.write(f"Abnormal: {report['abnormal_count']}")
                 
                 with col2:
-                    st.markdown("**👤 Patient Info**")
+                    st.markdown("**Patient Info**")
                     st.write(f"Age: {report['patient_age'] or 'N/A'}")
                     st.write(f"Gender: {report['patient_gender'] or 'Unknown'}")
                 
                 with col3:
-                    st.markdown("**🔧 Actions**")
-                    if st.button("View Full Report", key=f"full_{report['id']}", use_container_width=True):
+                    st.markdown("**Actions**")
+                    if st.button(
+                        "View Full Report",
+                        key=f"full_{report['id']}",
+                        use_container_width=False
+                    ):
                         st.session_state.current_report_id = report['id']
+                        st.session_state.show_report_details = True
+                        st.rerun()
                 
                 # Test results table
                 if report_details['test_results']:
-                    st.markdown("**🔬 Test Results:**")
+                    st.markdown("**Test Results:**")
                     
                     df_tests = pd.DataFrame(report_details['test_results'])
                     df_tests = df_tests[['test_name', 'test_value', 'units', 'status', 'reference_range']]
@@ -3442,7 +3546,7 @@ def show_history_page(user_id: str):
                 if report_details.get('pdf_path') and os.path.exists(report_details['pdf_path']):
                     with open(report_details['pdf_path'], 'rb') as f:
                         st.download_button(
-                            label="📥 Download PDF Report",
+                            label="Download PDF Report",
                             data=f,
                             file_name=f"report_{report['report_date'][:10]}.pdf",
                             mime="application/pdf",
@@ -3451,18 +3555,164 @@ def show_history_page(user_id: str):
                         )
 
 
+def show_report_details_model(report_id: int, user_id: str):
+    """Show detailed report in a full-page view."""
+    
+    # Back button at the top
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col1:
+        if st.button("Back to History", key="back_to_history", type="secondary"):
+            st.session_state.show_report_details = False
+            st.session_state.current_report_id = None
+            st.rerun()
+    
+    st.markdown("---")
+    # st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Get report details
+    report_details = db.get_report_details(report_id)
+    
+    # Header
+    st.markdown("""
+    <div class="hero-header" style="margin-bottom: 2rem; padding: 1rem;">
+        <h1 style="padding: 0;">Report Details</h1>
+        <p style="margin-bottom: 0;">Comprehensive view of your medical report</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Report metadata
+    st.markdown(f"### {report_details['filename']}")
+    st.caption(f"Report Date: {report_details['report_date'][:10]}")
+    
+    # st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Statistics
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Total Tests", report_details['total_tests'])
+    with col2:
+        st.metric("Normal", report_details['normal_count'])
+    with col3:
+        st.metric("Abnormal", report_details['abnormal_count'])
+    with col4:
+        st.metric("No Reference", report_details['no_reference_count'])
+    
+    st.markdown("---")
+    
+    # Tabs for different sections
+    tab1, tab2, tab3 = st.tabs(["Summary", "Test Results", "Ask Questions"])
+    
+    with tab1:
+        # Summary
+        if report_details.get('summary'):
+            st.markdown("### Summary")
+            import markdown
+            summary_html = markdown.markdown(report_details['summary'], extensions=['extra', 'nl2br'])
+            st.markdown(f"""
+            <div class="summary-box-style">
+                {summary_html}
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Recommendations
+        if report_details.get('recommendations'):
+            st.markdown("### Key Recommendations")
+            import markdown
+            recommendations_html = markdown.markdown(report_details['recommendations'], extensions=['extra', 'nl2br'])
+            st.markdown(f"""
+            <div class="recommendation-box-style">
+                {recommendations_html}
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with tab2:
+        # Test Results
+        st.markdown("### All Test Results")
+        
+        if report_details['test_results']:
+            # Separate normal and abnormal tests
+            abnormal_tests = [t for t in report_details['test_results'] if t['status'] in ['high', 'low']]
+            normal_tests = [t for t in report_details['test_results'] if t['status'] == 'normal']
+            other_tests = [t for t in report_details['test_results'] if t['status'] not in ['high', 'low', 'normal']]
+            
+            # Show abnormal tests first
+            if abnormal_tests:
+                st.markdown("#### Tests Requiring Attention")
+                for test in abnormal_tests:
+                    status_color = "red" if test['status'] == 'high' else "orange"
+                    with st.expander(f"{test['test_name']} - {test['status'].upper()}", expanded=False):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.write(f"**Value:** {test['test_value']} {test['units']}")
+                            st.write(f"**Status:** {test['status'].upper()}")
+                        with col2:
+                            st.write(f"**Normal Range:** {test['reference_range']}")
+                        
+                        if test.get('analysis'):
+                            st.info(test['analysis'])
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Show normal tests
+            if normal_tests:
+                with st.expander(f"Normal Tests ({len(normal_tests)})", expanded=False):
+                    df_normal = pd.DataFrame(normal_tests)
+                    df_normal = df_normal[['test_name', 'test_value', 'units', 'reference_range']]
+                    df_normal.columns = ['Test Name', 'Value', 'Units', 'Normal Range']
+                    st.dataframe(df_normal, use_container_width=True, hide_index=True)
+            
+            # Show other tests
+            if other_tests:
+                with st.expander(f"Other Tests ({len(other_tests)})", expanded=False):
+                    df_other = pd.DataFrame(other_tests)
+                    df_other = df_other[['test_name', 'test_value', 'units']]
+                    df_other.columns = ['Test Name', 'Value', 'Units']
+                    st.dataframe(df_other, use_container_width=True, hide_index=True)
+        else:
+            st.info("No test results available")
+    
+    with tab3:
+        # Quick link to Q&A
+        st.markdown("### Ask Questions About This Report")
+        st.info("You can ask specific questions about this report in the Q&A section")
+        
+        if st.button("Go to Q&A Section", type="primary", use_container_width=True):
+            st.session_state.current_page = "Ask Questions"
+            st.session_state.current_report_id = report_id
+            st.rerun()
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Download button
+    col1,col2,col3 = st.columns([1,2,1])
+    with col2:
+        if report_details.get('pdf_path') and os.path.exists(report_details['pdf_path']):
+            with open(report_details['pdf_path'], 'rb') as f:
+                st.download_button(
+                    label="Download PDF",
+                    data=f,
+                    file_name=f"report_{report_details['report_date'][:10]}.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                    type="primary"
+                )
+
+
 def show_settings_page(user_id: str):
     """Modern settings page."""
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 2rem;">
-        <h1>⚙️ Account Settings</h1>
+        <h1>Account Settings</h1>
         <p>Manage your profile and preferences</p>
     </div>
     """, unsafe_allow_html=True)
     
     user_profile = db.get_user_profile(user_id)
     
-    tabs = st.tabs(["👤 Profile", "🔐 Security", "📧 Notifications", "ℹ️ About"])
+    tabs = st.tabs(["Profile", "Security", "Notifications", "About"])
     
     with tabs[0]:
         st.markdown("### Personal Information")
@@ -3510,71 +3760,70 @@ def show_settings_page(user_id: str):
             new_password = st.text_input("New Password", type="password", key="settings_new_pass")
             confirm_password = st.text_input("Confirm New Password", type="password", key="settings_confirm_pass")
             
-            if st.form_submit_button("🔄 Update Password", type="primary"):
+            if st.form_submit_button("Update Password", type="primary"):
                 if not all([current_password, new_password, confirm_password]):
-                    st.error("⚠️ Please fill in all fields")
+                    st.error("Please fill in all fields")
                 elif new_password != confirm_password:
-                    st.error("⚠️ New passwords do not match")
+                    st.error("New passwords do not match")
                 else:
                     user_check = db.authenticate_user(user_profile['email'], current_password)
                     if not user_check:
-                        st.error("❌ Current password is incorrect")
+                        st.error("Current password is incorrect")
                     else:
                         is_valid, msg = validate_password(new_password)
                         if not is_valid:
-                            st.error(f"⚠️ {msg}")
+                            st.error(f"{msg}")
                         else:
                             if db.reset_password(user_profile['email'], new_password):
-                                st.success("✅ Password updated successfully!")
+                                st.success("Password updated successfully!")
                                 st.balloons()
                             else:
-                                st.error("❌ Failed to update password")
+                                st.error("Failed to update password")
     
     with tabs[2]:
         st.markdown("### Email Notifications")
         
-        st.checkbox("📧 Report upload confirmations", value=True, key="notif_upload")
-        st.checkbox("📊 Weekly health summaries", value=False, key="notif_weekly")
-        st.checkbox("⚠️ Abnormal test alerts", value=True, key="notif_abnormal")
-        st.checkbox("🔒 Account security alerts", value=True, key="notif_security")
+        st.checkbox("Report upload confirmations", value=True, key="notif_upload")
+        st.checkbox("Weekly health summaries", value=False, key="notif_weekly")
+        st.checkbox("Abnormal test alerts", value=True, key="notif_abnormal")
+        st.checkbox("Account security alerts", value=True, key="notif_security")
         
-        if st.button("💾 Save Preferences", type="primary"):
-            st.success("✅ Notification preferences saved!")
+        if st.button("Save Preferences", type="primary"):
+            st.success("Notification preferences saved!")
     
     with tabs[3]:
         st.markdown("### About Medical Analysis Agent")
         
         st.markdown("""
         <div class="modern-card">
-            <h4 style="color: #667eea;">🏥 Medical Analysis Agent</h4>
-            <p style="color: #666; line-height: 1.8;">
-                Medical Analysis Agent is an intelligent medical report analysis platform that helps you 
-                understand your lab results with AI-powered insights. Our mission is to empower 
-                individuals with clear, actionable health information.
-            </p>
-            
-            <h4 style="color: #667eea; margin-top: 2rem;">📋 Features</h4>
-            <ul style="color: #666; line-height: 1.8;">
-                <li>AI-powered medical report analysis</li>
-                <li>Easy-to-understand health insights</li>
-                <li>Trend tracking and visualization</li>
-                <li>Personalized health recommendations</li>
-                <li>Secure data storage and encryption</li>
-            </ul>
-            
-            <h4 style="color: #667eea; margin-top: 2rem;">📞 Contact & Support</h4>
-            <p style="color: #666;">
-                <strong>Email:</strong> support@medicalanalysis.ai<br>
-                <strong>Phone:</strong> 1-800-MEDICAL<br>
-                <strong>Website:</strong> www.medicalanalysis.ai
-            </p>
-            
-            <h4 style="color: #667eea; margin-top: 2rem;">📄 Version Information</h4>
-            <p style="color: #666;">
-                <strong>Version:</strong> 1.0.0<br>
-                <strong>Release Date:</strong> November 2024<br>
-                <strong>License:</strong> Proprietary
-            </p>
+        <h4 style="color: #667eea;">Medical Analysis Agent</h4>
+        <p style="color: #666; line-height: 1.8;">
+            Medical Analysis Agent is an intelligent medical report analysis platform that helps you 
+            understand your lab results with AI-powered insights. Our mission is to empower 
+            individuals with clear, actionable health information.
+        </p>
+        
+        <h4 style="color: #667eea; margin-top: 2rem;">Features</h4>
+        <ul style="color: #666; line-height: 1.8;">
+            <li>AI-powered medical report analysis</li>
+            <li>Easy-to-understand health insights</li>
+            <li>Trend tracking and visualization</li>
+            <li>Personalized health recommendations</li>
+            <li>Secure data storage and encryption</li>
+        </ul>
+        <h4 style="color: #667eea; margin-top: 2rem;">Contact &amp; Support</h4>
+        <p style="color: #666;">
+            <strong>Email:</strong> support@medicalanalysis.ai<br>
+            <strong>Phone:</strong> 1-800-MEDICAL<br>
+            <strong>Website:</strong> www.medicalanalysis.ai
+        </p>
+        
+        <h4 style="color: #667eea; margin-top: 2rem;">Version Information</h4>
+        <p style="color: #666;">
+            <strong>Version:</strong> 1.0.0<br>
+            <strong>Release Date:</strong> November 2024<br>
+            <strong>License:</strong> Proprietary
+        </p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -3583,11 +3832,11 @@ def show_settings_page(user_id: str):
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button("📖 Privacy Policy", use_container_width=True):
+            if st.button("Privacy Policy", use_container_width=True):
                 st.info("Privacy Policy page would open here")
         
         with col2:
-            if st.button("📜 Terms of Service", use_container_width=True):
+            if st.button("Terms of Service", use_container_width=True):
                 st.info("Terms of Service page would open here")
 
 
@@ -3632,7 +3881,6 @@ def show_footer():
     # Branding Section
     st.markdown("""
     <div style='text-align: center; padding: 2rem 0; border-top: 2px solid #e0e7ff;'>
-        <div style='font-size: 2rem; margin-bottom: 0.5rem;'>🏥</div>
         <h3 style='color: #667eea; margin: 0.5rem 0; font-size: 1.8rem; font-weight: 700;'>Medical Analysis Agent</h3>
         <p style='color: #666; font-size: 1.1rem; margin: 0.5rem 0;'>
             Empowering Health Understanding Through Artificial Intelligence
@@ -3646,7 +3894,7 @@ def show_footer():
     with col1:
         st.markdown("""
         <div style='text-align: center;'>
-            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>📞 Contact Us</h4>
+            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>Contact Us</h4>
             <p style='color: #666; font-size: 0.9rem; line-height: 1.6;'>
                 Email: support@medicalanalysis.ai<br>
                 Phone: 1-800-MEDICAL<br>
@@ -3658,7 +3906,7 @@ def show_footer():
     with col2:
         st.markdown("""
         <div style='text-align: center;'>
-            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>🔒 Security</h4>
+            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>Security</h4>
             <p style='color: #666; font-size: 0.9rem; line-height: 1.6;'>
                 256-bit Encryption<br>
                 HIPAA Compliant<br>
@@ -3670,7 +3918,7 @@ def show_footer():
     with col3:
         st.markdown("""
         <div style='text-align: center;'>
-            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>📱 Connect</h4>
+            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>Connect</h4>
             <p style='color: #666; font-size: 0.9rem; line-height: 1.6;'>
                 Twitter: @MedicalAI<br>
                 LinkedIn: Medical Anlaysis Agent<br>
@@ -3682,7 +3930,7 @@ def show_footer():
     with col4:
         st.markdown("""
         <div style='text-align: center;'>
-            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>📚 Resources</h4>
+            <h4 style='color: #667eea; margin-bottom: 0.75rem;'>Resources</h4>
             <p style='color: #666; font-size: 0.9rem; line-height: 1.6;'>
                 <a href="#" style="color: #667eea; text-decoration: none;">Help Center</a><br>
                 <a href="#" style="color: #667eea; text-decoration: none;">API Docs</a><br>
