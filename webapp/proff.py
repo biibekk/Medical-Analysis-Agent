@@ -16,7 +16,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Import your existing analyzer
-from medical_analyzer import (
+from medical_analyzer2 import (
     app as analyzer_workflow,
     generate_user_friendly_output,
     generate_pdf_report,
@@ -1501,7 +1501,7 @@ class MedicalDatabase:
             SELECT timestamp, role, message
             FROM chat_history
             WHERE user_id = ? AND report_id = ?
-            ORDER BY timestamp
+            ORDER BY timestamp DESC
             """, (user_id, report_id))
         else:
             cursor.execute("""
@@ -1517,20 +1517,6 @@ class MedicalDatabase:
         
         conn.close()
         return history
-    
-    def clear_chat_history(self, user_id: str, report_id: int = None):
-        """Clear chat history."""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        if report_id:
-            cursor.execute("DELETE FROM chat_history WHERE user_id = ? AND report_id = ?", (user_id, report_id))
-        else:
-            cursor.execute("DELETE FROM chat_history WHERE user_id = ?", (user_id,))
-        
-        conn.commit()
-        conn.close()
-
 # ============== Q&A AGENT (COMPLETE) ==============
 
 class MedicalQAAgent:
@@ -2676,14 +2662,18 @@ def show_upload_page(user_id: str):
                 f.write(uploaded_file.getbuffer())
             
             # Analysis with progress
-            st.markdown("""
-            <div class="modern-card" style="margin-top: 2rem;">
-                <h4 style="color: #667eea;">Analyzing Your Report...</h4>
-            </div>
-            """, unsafe_allow_html=True)
-            
+            # st.markdown("""
+            # <div class="modern-card" style="margin-top: 2rem;">
+            #     <h4 style="color: #667eea;">Analyzing Your Report...</h4>
+            # </div>
+            # """, unsafe_allow_html=True)
+
+            analysis_bar = st.empty()
             progress_bar = st.progress(0)
             status_text = st.empty()
+            
+            analysis_bar.markdown("Analyzing Your Report...")
+
             
             try:
                 # Step 1: Parse PDF
@@ -2726,6 +2716,7 @@ def show_upload_page(user_id: str):
                     
                     progress_bar.progress(100)
                     status_text.empty()
+                    analysis_bar = st.empty()
                     progress_bar.empty()
                     
                     st.success("Report analyzed successfully!")
@@ -3034,7 +3025,7 @@ def show_qa_page(user_id: str):
     if chat_history:
         st.markdown("### Conversation History")
         
-        # Group messages into Q&A pairs (chat_history is already newest first from DB)
+        # Group messages into Q&A pairs (chat_history comes newest first from DB)
         qa_pairs = []
         i = 0
         while i < len(chat_history):
@@ -3051,15 +3042,17 @@ def show_qa_page(user_id: str):
                     i += 1
                 
                 if user_msg:
-                    qa_pairs.append((assistant_msg, user_msg))
+                    qa_pairs.append((user_msg, assistant_msg))  # Store as (user, assistant)
             else:
                 i += 1
         
-        # Reverse pairs so oldest appears first, newest at bottom
+        # DON'T reverse - keep newest first, which will display oldest at top
+        # (since we're iterating through pairs that were collected newest-first)
+        # Actually, we need to reverse to show oldest first
         qa_pairs.reverse()
         
-        # Display Q&A pairs (oldest first, newest last)
-        for assistant_msg, user_msg in qa_pairs:
+        # Display Q&A pairs (oldest at top, newest at bottom)
+        for user_msg, assistant_msg in qa_pairs:
             # Display user question first, then answer
             st.markdown(f"""
             <div class="chat-message user-message">
