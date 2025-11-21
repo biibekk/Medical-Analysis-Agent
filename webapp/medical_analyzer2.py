@@ -1,6 +1,5 @@
 """
-MEDICAL REPORT ANALYZER v5.0 - ENHANCED EDITION
-Intelligent handling of missing reference ranges with AI fallback
+MEDICAL REPORT ANALYZER
 """
 
 import json
@@ -15,6 +14,7 @@ from reference_data import REFERENCE_RANGES, TEST_NAME_MAPPING, get_reference_ra
 
 # LangChain & LLM
 from langchain_groq import ChatGroq
+from openai import OpenAI
 from langgraph.graph import StateGraph, END
 
 # PDF Processing
@@ -32,7 +32,7 @@ try:
     OCR_AVAILABLE = True
 except ImportError:
     OCR_AVAILABLE = False
-    print("⚠️  OCR libraries not available")
+    print("OCR libraries not available")
 
 # PDF Generation
 from reportlab.lib.pagesizes import letter
@@ -48,7 +48,7 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:
-    print("❌ GROQ_API_KEY not found. Create .env file with: GROQ_API_KEY=your_key")
+    print("GROQ_API_KEY not found. Create .env file with: GROQ_API_KEY=your_key")
     sys.exit(1)
 
 llm = ChatGroq(
@@ -57,7 +57,13 @@ llm = ChatGroq(
     temperature=0
 )
 
-print("✓ LLM initialized!")
+# llm = OpenAI(
+#     model="gpt-5.1",
+#     api_key=os.getenv("OPENAI_API_KEY"),
+#     temperature=0
+# )
+
+print("LLM initialized!")
 
 # ============================================================================
 # LEARNED RANGES MANAGEMENT
@@ -575,8 +581,20 @@ Extract patient information from this report.
 Text:
 {state['raw_text'][:1500]}
 
-Return JSON:
-{{"age": <number or null>, "gender": "male"/"female"/"unknown"}}
+Return JSON with these fields:
+{{
+  "name": "Patient full name or 'Unknown' if not found",
+  "age": <number or null>,
+  "gender": "male"/"female"/"unknown"
+}}
+
+IMPORTANT:
+- Extract the patient's name if clearly mentioned (e.g., "Patient Name:", "Name:", in header)
+- Do NOT extract doctor names, hospital names, or report IDs
+- If multiple names appear, choose the one labeled as "Patient"
+- Return "Unknown" for name if not clearly identifiable
+
+Return ONLY valid JSON.
 """
     
     try:
@@ -585,14 +603,21 @@ Return JSON:
         
         if json_match:
             patient_info = json.loads(json_match.group())
+            # Ensure all fields exist
+            if "name" not in patient_info:
+                patient_info["name"] = "Unknown"
+            if "age" not in patient_info:
+                patient_info["age"] = None
+            if "gender" not in patient_info:
+                patient_info["gender"] = "unknown"
         else:
-            patient_info = {"age": None, "gender": "unknown"}
+            patient_info = {"name": "Unknown", "age": None, "gender": "unknown"}
         
-        print(f"✓ Patient: Age={patient_info.get('age', 'N/A')}, Gender={patient_info.get('gender', 'unknown')}")
+        print(f"✓ Patient: Patient: Name={patient_info.get('name', 'Unknown')}, Age={patient_info.get('age', 'N/A')}, Gender={patient_info.get('gender', 'unknown')}")
         return {**state, "patient_info": patient_info}
     
     except:
-        return {**state, "patient_info": {"age": None, "gender": "unknown"}}
+        return {**state, "patient_info": {"name": "Unknown", "age": None, "gender": "unknown"}}
 
 def classify_document_node(state: GraphState) -> GraphState:
     """Classify document structure."""
@@ -607,6 +632,33 @@ def classify_document_node(state: GraphState) -> GraphState:
     
     print(f"✓ Classified as: {doc_type}")
     return {**state, "document_type": doc_type}
+
+def extract_tabular_data_node(state: GraphState) -> GraphState:
+    """Extract tables using pdfplumber."""
+    print("\n" + "="*60)
+    print("NODE: EXTRACTING TABULAR DATA")
+    print("="*60)
+    
+    try:
+        extracted_data = []
+        with pdfplumber.open(state["pdf_path"]) as pdf:
+            for page_num, page in enumerate(pdf.pages):
+                tables = page.extract_tables()
+                for table_num, table in enumerate(tables):
+                    if len(table) > 1:
+                        df = pd.DataFrame(table[1:], columns=table[0])
+                        extracted_data.extend(df.to_dict("records"))
+        
+        if not extracted_data:
+            print("✗ No tables found, falling back to semi-structured extraction")
+            return extract_semi_structured_data_node(state)
+        
+        print(f"✓ Extracted {len(extracted_data)} records from tables")
+        return {**state, "extracted_data": extracted_data}
+    
+    except Exception as e:
+        print(f"✗ Error extracting tables: {e}")
+        return extract_semi_structured_data_node(state)
 
 def extract_semi_structured_data_node(state: GraphState) -> GraphState:
     """Extract with multiple methods."""
@@ -665,6 +717,15 @@ def extract_semi_structured_data_node(state: GraphState) -> GraphState:
         "extracted_data": unique_results,
         "extraction_confidence": min(1.0, len(unique_results) / 30)
     }
+
+def extract_unstructured_data_node(state: GraphState) -> GraphState:
+    """Extract data from unstructured text."""
+    print("\n" + "="*60)
+    print("NODE: EXTRACTING UNSTRUCTURED DATA")
+    print("="*60)
+    
+    return extract_semi_structured_data_node(state)
+
 
 def validate_extraction_node(state: GraphState) -> GraphState:
     """Validate extracted data."""
@@ -886,7 +947,10 @@ def summarize_report_node(state: GraphState) -> GraphState:
     prompt = f"""
 Create a clear, empathetic, comprehensive summary of this {category} report for the patient.
 
-Patient: Age {patient.get('age', 'N/A')}, {patient.get('gender', 'unknown')} 
+**Patient Information:**
+- Name: {patient.get('name', 'Unknown')}
+- Age: {patient.get('age', 'N/A')}
+- Gender: {patient.get('gender', 'unknown')}
 Total findings: {len(analyzed)}
 Normal: {normal_count}
 High: {len(high_results)}
@@ -1013,8 +1077,10 @@ All your measurements are within normal healthy ranges.
         prompt = f"""
 Based on this imaging report showing kidney stones/calculi, provide specific lifestyle recommendations.
 
-Patient: Age {patient.get('age', 'unknown')}, {patient.get('gender', 'unknown')}
-Findings:
+**Patient Information:**
+- Name: {patient.get('name', 'Unknown')}
+- Age: {patient.get('age', 'unknown')}
+- Gender: {patient.get('gender', 'unknown')}Findings:
 {json.dumps([r for r in analyzed if 'calculus' in r.get('test_name', '').lower() or 'stone' in r.get('test_name', '').lower()], indent=2)}
 
 Provide practical recommendations in these sections:
@@ -1041,8 +1107,10 @@ Keep language simple and actionable.
         prompt = f"""
 Based on these {category} findings, provide general wellness recommendations.
 
-Patient: Age {patient.get('age', 'unknown')}, {patient.get('gender', 'unknown')}
-Abnormal Results:
+**Patient Information:**
+- Name: {patient.get('name', 'Unknown')}
+- Age: {patient.get('age', 'unknown')}
+- Gender: {patient.get('gender', 'unknown')}Abnormal Results:
 {json.dumps(abnormal, indent=2)}
 
 Provide recommendations in sections:
@@ -1115,19 +1183,37 @@ workflow = StateGraph(GraphState)
 workflow.add_node("parse_pdf", parse_pdf_node)
 workflow.add_node("extract_patient_info", extract_patient_info_node)
 workflow.add_node("classify_document", classify_document_node)
+workflow.add_node("extract_tabular", extract_tabular_data_node)
 workflow.add_node("extract_semi_structured", extract_semi_structured_data_node)
+workflow.add_node("extract_unstructured", extract_unstructured_data_node)   
 workflow.add_node("validate_extraction", validate_extraction_node)
 workflow.add_node("analyze_results", analyze_results_node)
 workflow.add_node("summarize_report", summarize_report_node)
 workflow.add_node("generate_recommendations", generate_recommendations_node)
 workflow.add_node("handle_error", handle_error_node)
 
+# Set entry point
 workflow.set_entry_point("parse_pdf")
+
 workflow.add_edge("parse_pdf", "extract_patient_info")
 workflow.add_edge("extract_patient_info", "classify_document")
-workflow.add_conditional_edges("classify_document", route_document, 
-    {"extract_semi_structured": "extract_semi_structured", "error": "handle_error"})
+
+workflow.add_conditional_edges(
+    "classify_document",
+    route_document,
+    {
+        "extract_tabular": "extract_tabular",
+        "extract_semi_structured": "extract_semi_structured",
+        "extract_unstructured": "extract_unstructured",
+        "error": "handle_error",
+    },
+)
+
+# Connect extraction to validation
+workflow.add_edge("extract_tabular", "validate_extraction")
 workflow.add_edge("extract_semi_structured", "validate_extraction")
+workflow.add_edge("extract_unstructured", "validate_extraction")
+
 workflow.add_edge("validate_extraction", "analyze_results")
 workflow.add_edge("analyze_results", "summarize_report")
 workflow.add_edge("summarize_report", "generate_recommendations")
@@ -1135,7 +1221,7 @@ workflow.add_edge("generate_recommendations", END)
 workflow.add_edge("handle_error", END)
 
 app = workflow.compile()
-print("✓ Workflow compiled!")
+print("Workflow compiled!")
 
 # ============================================================================
 # PDF GENERATION
@@ -1162,9 +1248,11 @@ def generate_pdf_report(output: dict, filename: str = "medical_report.pdf"):
     elements.append(Spacer(1, 0.3*inch))
     
     # Patient Info
+    # Patient Info
     elements.append(Paragraph("Patient Information", styles['SectionHeader']))
     patient = output.get("patient_info", {})
     patient_data = [
+        ["Name:", patient.get('name', 'Unknown')],
         ["Age:", str(patient.get('age', 'N/A'))],
         ["Gender:", patient.get('gender', 'Unknown').capitalize()],
     ]
@@ -1312,6 +1400,10 @@ def generate_user_friendly_output(final_state: dict) -> dict:
         "patient_info": final_state.get("patient_info", {}),
         "summary": final_state.get("summarized_report", ""),
         "recommendations": final_state.get("recommendations", ""),
+        "raw_extracted_tests": {
+            r["normalized_name"]: r["numeric_value"]
+            for r in analyzed if r.get("numeric_value") is not None
+        },
         "statistics": {
             "total_tests": len(analyzed),
             "normal_count": sum(1 for r in analyzed if r.get("status") == "normal"),
@@ -1351,6 +1443,7 @@ def print_results_summary(output: dict):
     patient = output.get("patient_info", {})
     print("\n👤 PATIENT INFORMATION")
     print("-"*80)
+    print(f"Name: {patient.get('name', 'Unknown')}")
     print(f"Age: {patient.get('age', 'N/A')}")
     print(f"Gender: {patient.get('gender', 'Unknown').capitalize()}")
     print(f"Document Type: {output.get('document_category', 'Unknown').title()}")
@@ -1483,6 +1576,7 @@ def analyze_medical_report(pdf_path: str):
                 f.write("PATIENT INFORMATION\n")
                 f.write("-"*80 + "\n")
                 patient = output.get("patient_info", {})
+                f.write(f"Name: {patient.get('name', 'Unknown')}\n")
                 f.write(f"Age: {patient.get('age', 'N/A')}\n")
                 f.write(f"Gender: {patient.get('gender', 'Unknown').capitalize()}\n")
                 f.write(f"Document Type: {output.get('document_category', 'Unknown').title()}\n\n")
@@ -1589,12 +1683,12 @@ if __name__ == "__main__":
     #     pdf_path = input("Enter path to medical report PDF: ").strip().strip('"')
     
     # if not pdf_path:
-    pdf_path = "/Users/_biibekk_/Downloads/Oliver_Rose_Blood_Test_Report.pdf"
+    pdf_path = "/Users/_biibekk_/Desktop/Minor Project/reports/Report_Oliver_Rose.pdf"
     
     result = analyze_medical_report(pdf_path)
     
     if result and result.get("success"):
-        print(f"\n✅ Analysis completed successfully!")
+        print(f"\nAnalysis completed successfully!")
         print(f"\nKey Stats:")
         stats = result.get("statistics", {})
         print(f"  - Total Tests: {stats.get('total_tests', 0)}")
@@ -1609,6 +1703,7 @@ if __name__ == "__main__":
                 print(f"\n🧠 System has learned {len(learned)} new reference ranges")
                 print(f"   These will be used automatically for future reports!")
     else:
-        print(f"\n❌ Analysis failed.")
+        print(f"\nAnalysis failed.")
         if result:
             print(f"Error: {result.get('details', 'Unknown error')}")
+
