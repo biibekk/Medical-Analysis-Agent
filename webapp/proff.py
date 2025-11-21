@@ -25,7 +25,7 @@ from medical_analyzer2 import (
 
 # Page configuration
 st.set_page_config(
-    page_title="Medical Analysis Agent - Your Personal Medical Assistant",
+    page_title="Project Dhatri - Your Personal Medical Assistant",
     page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -693,7 +693,7 @@ class EmailService:
         self.smtp_username = os.getenv('SMTP_USERNAME', '')
         self.smtp_password = os.getenv('SMTP_PASSWORD', '')
         self.from_email = os.getenv('FROM_EMAIL', self.smtp_username)
-        self.from_name = os.getenv('FROM_NAME', 'Medical Analysis Agent')
+        self.from_name = os.getenv('FROM_NAME', 'Project Dhatri')
     
     def send_email(self, to_email: str, subject: str, html_content: str, text_content: str = None) -> bool:
         """Send email with HTML and plain text fallback."""
@@ -722,7 +722,7 @@ class EmailService:
     
     def send_otp(self, to_email: str, otp: str, purpose: str = "verification") -> bool:
         """Send OTP verification email with professional template."""
-        subject = f"Your Medical Analysis Agent Verification Code"
+        subject = f"Your Project Dhatri Verification Code"
         
         html_content = f"""
         <!DOCTYPE html>
@@ -807,28 +807,28 @@ class EmailService:
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🏥 Medical Analysis Agent</h1>
+                    <h1>Project Dhatri</h1>
                     <p style="margin: 10px 0 0 0; opacity: 0.9;">Your Personal Medical Assistant</p>
                 </div>
                 <div class="content">
                     <h2 style="color: #333; margin-top: 0;">Account Verification</h2>
-                    <p style="font-size: 16px; color: #555;">Hi there! 👋</p>
+                    <p style="font-size: 16px; color: #555;">Hi there! </p>
                     <p style="font-size: 16px; color: #555;">
-                        Thank you for choosing Medical Analysis Agent. To complete your {purpose}, 
+                        Thank you for choosing Project Dhatri. To complete your {purpose}, 
                         please use the verification code below:
                     </p>
                     <div class="otp-box">{otp}</div>
                     <div class="info-box">
-                        <strong style="color: #667eea;">⏰ Valid for 10 minutes</strong><br>
+                        <strong style="color: #667eea;"> Valid for 10 minutes</strong><br>
                         <p style="margin: 10px 0 0 0; color: #666;">
                             Enter this code in the application to proceed with your {purpose}.
                         </p>
                     </div>
                     <div class="warning">
-                        <strong>🔒 Security Tips:</strong><br>
+                        <strong>Security Tips:</strong><br>
                         <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #666;">
                             <li>Never share this code with anyone</li>
-                            <li>Medical Analysis Agent will never ask for this code via phone or email</li>
+                            <li>Project Dhatri will never ask for this code via phone or email</li>
                             <li>If you didn't request this, please ignore this email</li>
                         </ul>
                     </div>
@@ -838,10 +838,10 @@ class EmailService:
                     </p>
                 </div>
                 <div class="footer">
-                    <p style="margin: 0;"><strong>Medical Analysis Agent</strong></p>
+                    <p style="margin: 0;"><strong>Project Dhatri</strong></p>
                     <p style="margin: 10px 0;">Your trusted medical report analysis platform</p>
                     <p style="margin: 10px 0; font-size: 12px;">
-                        © 2024 Medical Analysis Agent. All rights reserved.
+                        © 2024 Project Dhatri. All rights reserved.
                     </p>
                 </div>
             </div>
@@ -850,7 +850,7 @@ class EmailService:
         """
         
         text_content = f"""
-        Medical Analysis Agent - Account Verification
+        Project Dhatri - Account Verification
         
         Your verification code is: {otp}
         
@@ -866,7 +866,7 @@ class EmailService:
     
     def send_welcome_email(self, to_email: str, full_name: str) -> bool:
         """Send professional welcome email."""
-        subject = "Welcome to Medical Analysis Agent! 🎉"
+        subject = "Welcome to Project Dhatri !"
         
         html_content = f"""
         <!DOCTYPE html>
@@ -938,22 +938,21 @@ class EmailService:
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🎉 Welcome to Medical Analysis Agent!</h1>
+                    <h1>Welcome to Project Dhatri !</h1>
                     <p style="margin: 15px 0 0 0; font-size: 18px; opacity: 0.95;">
                         Your Journey to Better Health Understanding Begins Now
                     </p>
                 </div>
                 <div class="content">
-                    <h2 style="color: #333;">Hello {full_name}! 👋</h2>
+                    <h2 style="color: #333;">Hello {full_name}!</h2>
                     <p style="font-size: 16px; color: #555; line-height: 1.8;">
-                        Thank you for joining <strong>Medical Analysis Agent</strong>. We're thrilled to have you on board! 
+                        Thank you for joining <strong>Project Dhatri</strong>. We're thrilled to have you on board! 
                         Our mission is to help you understand your medical reports with clarity and confidence.
                     </p>
                     
                     <h3 style="color: #667eea; margin-top: 35px;">✨ What You Can Do:</h3>
                     
                     <div class="feature">
-                        <span class="feature-icon">📤</span>
                         <strong>Upload Medical Reports</strong><br>
                         <span style="color: #666; font-size: 14px;">
                             Simply upload your lab reports in PDF format for instant analysis
@@ -961,7 +960,6 @@ class EmailService:
                     </div>
                     
                     <div class="feature">
-                        <span class="feature-icon">🤖</span>
                         <strong>AI-Powered Analysis</strong><br>
                         <span style="color: #666; font-size: 14px;">
                             Get comprehensive insights and easy-to-understand explanations
@@ -969,7 +967,6 @@ class EmailService:
                     </div>
                     
                     <div class="feature">
-                        <span class="feature-icon">📈</span>
                         <strong>Track Health Trends</strong><br>
                         <span style="color: #666; font-size: 14px;">
                             Monitor your health metrics over time with beautiful visualizations
@@ -977,7 +974,6 @@ class EmailService:
                     </div>
                     
                     <div class="feature">
-                        <span class="feature-icon">💬</span>
                         <strong>Ask Questions</strong><br>
                         <span style="color: #666; font-size: 14px;">
                             Chat with our AI assistant about your health data anytime
@@ -985,30 +981,30 @@ class EmailService:
                     </div>
                     
                     <div style="background: #fff3cd; padding: 20px; border-radius: 12px; margin: 30px 0; border-left: 4px solid #ffc107;">
-                        <strong style="color: #856404;">⚠️ Important Reminder:</strong><br>
+                        <strong style="color: #856404;">Important Reminder:</strong><br>
                         <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">
-                            Medical Analysis Agent is an informational tool. Always consult with your healthcare 
+                            Project Dhatri is an informational tool. Always consult with your healthcare 
                             provider for medical advice, diagnosis, or treatment decisions.
                         </p>
                     </div>
                     
                     <div style="text-align: center; margin: 40px 0;">
-                        <a href="#" class="cta-button">🚀 Start Your First Analysis</a>
+                        <a href="#" class="cta-button">Start Your First Analysis</a>
                     </div>
                     
                     <p style="color: #666; font-size: 14px; margin-top: 30px;">
                         Questions or need assistance? We're here to help!<br>
-                        📧 Email: <a href="mailto:support@mediscan.ai" style="color: #667eea;">support@mediscan.ai</a><br>
-                        💬 Live Chat: Available 24/7 in the app
+                        Email: <a href="mailto:support@mediscan.ai" style="color: #667eea;">support@mediscan.ai</a><br>
+                        Live Chat: Available 24/7 in the app
                     </p>
                 </div>
                 <div class="footer">
-                    <p style="margin: 0; font-weight: 600;">Medical Analysis Agent</p>
+                    <p style="margin: 0; font-weight: 600;">Project Dhatri</p>
                     <p style="margin: 10px 0; font-size: 13px;">
                         Empowering you with AI-driven health insights
                     </p>
                     <p style="margin: 10px 0; font-size: 12px;">
-                        © 2024 Medical Analysis Agent. All rights reserved.
+                        © 2024 Project Dhatri. All rights reserved.
                     </p>
                 </div>
             </div>
@@ -1607,7 +1603,7 @@ IMPORTANT GUIDELINES:
 3. **Clear Communication**: Explain medical terms in simple language
 4. **Personalized**: Consider the patient's medical history
 5. **Actionable**: Provide specific, actionable advice when appropriate
-6. **Safety**: Always remind to consult healthcare provider for medical decisions
+6. **Safety**: Provide a brief reminder to consult healthcare provider for medical decisions at the end of answer`
 7. **Empathetic**: Be reassuring and supportive while being honest
 
 ANSWER:
@@ -1685,7 +1681,7 @@ def show_login_page():
     # Hero Section
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 3rem;">
-        <h1>Medical Analysis Agent</h1>
+        <h1>Project Dhatri</h1>
         <p>Your Intelligent Medical Report Assistant</p>
     </div>
     """, unsafe_allow_html=True)
@@ -1746,7 +1742,7 @@ def show_login_page():
         
         st.markdown("""
         <div style="text-align: center; padding: 1rem 0;">
-            <p style="color: #666; margin-bottom: 1rem;">New to Medical Analysis Agent?</p>
+            <p style="color: #666; margin-bottom: 1rem;">New to Project Dhatri?</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1761,7 +1757,7 @@ def show_login_page():
     
     st.markdown("""
     <div style="text-align: center; margin: 4rem 0 2rem 0;">
-        <h2 style="color: #333; font-size: 2rem; font-weight: 700;">Why Choose Medical Analysis Agent?</h2>
+        <h2 style="color: #333; font-size: 2rem; font-weight: 700;">Why Choose Project Dhatri?</h2>
         <p style="color: #666; font-size: 1.1rem;">Understand your health like never before</p>
     </div>
     """, unsafe_allow_html=True)
@@ -1791,7 +1787,7 @@ def show_signup_page():
     
     st.markdown("""
     <div class="hero-header" style="margin-bottom: 3rem;">
-        <h1>Medical Analysis Agent</h1>
+        <h1>Project Dhatri</h1>
         <p>Join thousands of users taking control of their health</p>
     </div>
     """, unsafe_allow_html=True)
@@ -2158,7 +2154,7 @@ def show_main_app():
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 0 0 1.5rem; border-bottom: 2px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem;">
-            <h2 style="margin: 0; font-size: 1.5rem;">Medical Analysis Agent</h2>
+            <h2 style="margin: 0; font-size: 1.5rem;">Project Dhatri</h2>
             <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Your Health Dashboard</p>
         </div>
         """, unsafe_allow_html=True)
@@ -2320,7 +2316,7 @@ def show_main_app():
         st.markdown("""
         <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 0.75rem; opacity: 0.7;">
             <p>Version 1.0.0</p>
-            <p>© 2024 Medical Analysis Agent</p>
+            <p>© 2024 Project Dhatri</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -2540,51 +2536,51 @@ def show_dashboard_page(user_id: str):
             #     """, unsafe_allow_html=True)
             
         # Test Results Trend
-        if len(reports) > 1:
-            st.markdown("### Test Results Trend")
+        # if len(reports) > 1:
+        #     st.markdown("### Test Results Trend")
             
-            all_tests = set()
-            for report in reports:
-                report_details = db.get_report_details(report['id'])
-                for test in report_details['test_results']:
-                    all_tests.add(test['test_name'])
+        #     all_tests = set()
+        #     for report in reports:
+        #         report_details = db.get_report_details(report['id'])
+        #         for test in report_details['test_results']:
+        #             all_tests.add(test['test_name'])
             
-            if all_tests:
-                selected_test = st.selectbox(
-                    "Select test to view trend:",
-                    sorted(all_tests),
-                    key="dashboard_test_select"
-                )
+        #     if all_tests:
+        #         selected_test = st.selectbox(
+        #             "Select test to view trend:",
+        #             sorted(all_tests),
+        #             key="dashboard_test_select"
+        #         )
                 
-                trends = db.get_test_trends(user_id, selected_test)
+        #         trends = db.get_test_trends(user_id, selected_test)
                 
-                if len(trends) > 1:
-                    df_trends = pd.DataFrame(trends)
-                    df_trends['report_date'] = pd.to_datetime(df_trends['report_date'])
-                    df_trends['test_value'] = pd.to_numeric(df_trends['test_value'], errors='coerce')
+        #         if len(trends) > 1:
+        #             df_trends = pd.DataFrame(trends)
+        #             df_trends['report_date'] = pd.to_datetime(df_trends['report_date'])
+        #             df_trends['test_value'] = pd.to_numeric(df_trends['test_value'], errors='coerce')
                     
-                    fig = px.line(
-                        df_trends,
-                        x='report_date',
-                        y='test_value',
-                        title=f'{selected_test} Trend Over Time',
-                        markers=True
-                    )
+        #             fig = px.line(
+        #                 df_trends,
+        #                 x='report_date',
+        #                 y='test_value',
+        #                 title=f'{selected_test} Trend Over Time',
+        #                 markers=True
+        #             )
                     
-                    fig.update_layout(
-                        xaxis_title="Date",
-                        yaxis_title=f"{selected_test} ({trends[0]['units']})",
-                        hovermode='x unified',
-                        plot_bgcolor='white',
-                        paper_bgcolor='white'
-                    )
+        #             fig.update_layout(
+        #                 xaxis_title="Date",
+        #                 yaxis_title=f"{selected_test} ({trends[0]['units']})",
+        #                 hovermode='x unified',
+        #                 plot_bgcolor='white',
+        #                 paper_bgcolor='white'
+        #             )
                     
-                    fig.update_traces(
-                        line=dict(color='#667eea', width=3),
-                        marker=dict(size=10, color='#764ba2')
-                    )
+        #             fig.update_traces(
+        #                 line=dict(color='#667eea', width=3),
+        #                 marker=dict(size=10, color='#764ba2')
+        #             )
                     
-                    st.plotly_chart(fig, use_container_width=True)
+        #             st.plotly_chart(fig, use_container_width=True)
 
 
 def show_upload_page(user_id: str):
@@ -2672,7 +2668,11 @@ def show_upload_page(user_id: str):
             progress_bar = st.progress(0)
             status_text = st.empty()
             
-            analysis_bar.markdown("Analyzing Your Report...")
+            analysis_bar.markdown("""
+            <div class="modern-card" style="margin-top: 2rem;">
+                <h4 style="color: #667eea;">Analyzing Your Report...</h4>
+            </div>
+            """, unsafe_allow_html=True)
 
             
             try:
@@ -2716,7 +2716,7 @@ def show_upload_page(user_id: str):
                     
                     progress_bar.progress(100)
                     status_text.empty()
-                    analysis_bar = st.empty()
+                    analysis_bar.empty()
                     progress_bar.empty()
                     
                     st.success("Report analyzed successfully!")
@@ -3785,13 +3785,13 @@ def show_settings_page(user_id: str):
             st.success("Notification preferences saved!")
     
     with tabs[3]:
-        st.markdown("### About Medical Analysis Agent")
+        st.markdown("### About Project Dhatri")
         
         st.markdown("""
         <div class="modern-card">
-        <h4 style="color: #667eea;">Medical Analysis Agent</h4>
+        <h4 style="color: #667eea;">Project Dhatri</h4>
         <p style="color: #666; line-height: 1.8;">
-            Medical Analysis Agent is an intelligent medical report analysis platform that helps you 
+            Project Dhatri is an intelligent medical report analysis platform that helps you 
             understand your lab results with AI-powered insights. Our mission is to empower 
             individuals with clear, actionable health information.
         </p>
@@ -3845,7 +3845,7 @@ def show_footer():
          border-radius: 12px; margin: 2rem 0; border-left: 4px solid rgb(246, 213, 116)'>
         <h3 style='color: #856404;'>Important Medical Disclaimer</h3>
         <p style='color: #856404; line-height: 1.8;'>
-            <strong>Medical Analysis Agent</strong> is an informational tool designed to help you better understand your medical laboratory reports. 
+            <strong>Project Dhatri</strong> is an informational tool designed to help you better understand your medical laboratory reports. 
             This platform uses artificial intelligence to analyze and interpret medical data, but it is <strong>NOT a substitute for professional medical advice</strong>.
         </p>
     </div>
@@ -3874,7 +3874,7 @@ def show_footer():
     # Branding Section
     st.markdown("""
     <div style='text-align: center; padding: 2rem 0; border-top: 2px solid #e0e7ff;'>
-        <h3 style='color: #667eea; margin: 0.5rem 0; font-size: 1.8rem; font-weight: 700;'>Medical Analysis Agent</h3>
+        <h3 style='color: #667eea; margin: 0.5rem 0; font-size: 1.8rem; font-weight: 700;'>Project Dhatri</h3>
         <p style='color: #666; font-size: 1.1rem; margin: 0.5rem 0;'>
             Empowering Health Understanding Through Artificial Intelligence
         </p>
@@ -3945,7 +3945,7 @@ def show_footer():
             <a href="#" style="color: #667eea; text-decoration: none; margin: 0 1rem;">Accessibility</a>
         </p>
         <p style='color: #999; font-size: 0.75rem; margin-top: 1rem;'>
-            Medical Analysis Agent is a registered trademark. Patent pending technology.<br>
+            Project Dhatri is a registered trademark. Patent pending technology.<br>
             Made with ❤️ for better health understanding worldwide.
         </p>
     </div>
